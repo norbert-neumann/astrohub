@@ -17,6 +17,12 @@ export async function connectToMongo(serverUrl) {
             )
         },
 
+        async getFriends(username) {
+            const user = await usersCollection.findOne({username})
+            return Promise.all(user.friends
+                .map(id => usersCollection.findOne({_id: new ObjectId(id)})))
+        },
+
         updateUsername(currentUsername, newUsername) {
             return usersCollection.updateOne(
                 {username: currentUsername},
@@ -84,8 +90,8 @@ export async function connectToMongo(serverUrl) {
             await usersCollection.insertOne(user)
         },
 
-        deleteUser(user) {
-            usersCollection.deleteOne(user)
+        deleteUser(username) {
+            usersCollection.deleteOne({username})
         },
 
         //-----------------------SPOTS-----------------------\\

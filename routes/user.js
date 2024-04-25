@@ -3,13 +3,32 @@ import express from 'express'
 function createUserRouter(repository) {
     const router = express.Router()
 
-    router.get('/', async (req, res) => {
-        let username = req.query.username
-        let user = await repository.getUserByUsername(username)
+    router.get('/:username', async (req, res) => {
+        const user = await repository.getUserByUsername(req.params.username)
         res.send(user)
     })
 
+    router.get('/:username/friends', async (req, res) => {
+        const user = await repository.getFriends(req.params.username)
+        res.send(user)
+    })
+
+    router.get('/friends', async (req, res) => {
+        let username = req.query.username
+        let friends = await repository.getFriends(username)
+        res.send(friends)
+    })
+
     router.post('/', async (req, res) => {
+        const user = {
+            username: req.query.username,
+            displayName: req.query.displayName,
+            favouriteSpots: [],
+            trips: [],
+            friends: [],
+            friendRequests: []
+        }
+        repository.saveUser(user)
         res.send({data: 'POST user'})
     })
 
@@ -21,6 +40,7 @@ function createUserRouter(repository) {
     })
 
     router.delete('/', async (req, res) => {
+        repository.deleteUser(req.query.username)
         res.send({data: 'DELETE user'})
     })
 
