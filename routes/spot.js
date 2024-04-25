@@ -1,20 +1,25 @@
 import express from 'express'
-const router = express.Router()
 
-router.get('/', async (req, res) => {
-    res.send({data: 'GET spot'})
-})
+function createSpotRouter(repository) {
+    const router = express.Router()
 
-router.post('/', async (req, res) => {
-    res.send({data: 'POST spot'})
-})
+    router.get('/', async (req, res) => {
+        res.send({data: 'GET spot'})
+    })
 
-router.put('/', async (req, res) => {
-    res.send({data: 'PUT spot'})
-})
+    router.post('/', async (req, res) => {
+        res.send({data: 'POST spot'})
+    })
 
-router.delete('/', async (req, res) => {
-    res.send({data: 'DELETE spot'})
-})
+    router.put('/', async (req, res) => {
+        res.send({data: 'PUT spot'})
+    })
 
-export default router
+    router.delete('/', async (req, res) => {
+        res.send({data: 'DELETE spot'})
+    })
+
+    return router
+}
+
+export default createSpotRouter

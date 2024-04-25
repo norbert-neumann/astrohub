@@ -1,20 +1,28 @@
 import express from 'express'
-const router = express.Router()
 
-router.get('/', async (req, res) => {
-    res.send({data: 'GET trip'})
-})
+function createTripRouter(repository) {
+    const router = express.Router()
 
-router.post('/', async (req, res) => {
-    res.send({data: 'POST trip'})
-})
+    router.get('/', async (req, res) => {
+        res.send({data: 'GET trip'})
+    })
+    
+    router.post('/', async (req, res) => {
+        res.send({data: 'POST trip'})
+    })
+    
+    router.put('/location', async (req, res) => {
+        let currentSpotId = req.query.currentSpotId
+        let newSpotId = req.query.newSpotId
+        let result = await repository.updateTripLocation(currentSpotId, newSpotId)
+        res.send(result)
+    })
+    
+    router.delete('/', async (req, res) => {
+        res.send({data: 'DELETE trip'})
+    })
 
-router.put('/', async (req, res) => {
-    res.send({data: 'PUT trip'})
-})
+    return router
+}
 
-router.delete('/', async (req, res) => {
-    res.send({data: 'DELETE trip'})
-})
-
-export default router
+export default createTripRouter

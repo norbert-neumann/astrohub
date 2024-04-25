@@ -1,8 +1,13 @@
 import express from 'express'
-const router = express.Router()
 
-router.get('/', async (req, res) => {
-    res.send({data: 'GET forecast'})
-})
+function createForecastRouter(repository) {
+    const router = express.Router()
 
-export default router
+    router.get('/', async (req, res) => {
+        res.send({data: 'GET forecast'})
+    })
+
+    return router
+}
+
+export default createForecastRouter

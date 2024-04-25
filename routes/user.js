@@ -1,20 +1,30 @@
 import express from 'express'
-const router = express.Router()
 
-router.get('/', async (req, res) => {
-    res.send({data: 'GET user'})
-})
+function createUserRouter(repository) {
+    const router = express.Router()
 
-router.post('/', async (req, res) => {
-    res.send({data: 'POST user'})
-})
+    router.get('/', async (req, res) => {
+        let username = req.query.username
+        let user = await repository.getUserByUsername(username)
+        res.send(user)
+    })
 
-router.put('/', async (req, res) => {
-    res.send({data: 'PUT user'})
-})
+    router.post('/', async (req, res) => {
+        res.send({data: 'POST user'})
+    })
 
-router.delete('/', async (req, res) => {
-    res.send({data: 'DELETE user'})
-})
+    router.put('/username', async (req, res) => {
+        let currentUsername = req.query.currentUsername
+        let newUsername = req.query.newUsername
+        let result = await repository.updateUsername(currentUsername, newUsername)
+        res.send(result)
+    })
 
-export default router
+    router.delete('/', async (req, res) => {
+        res.send({data: 'DELETE user'})
+    })
+
+    return router
+}
+
+export default createUserRouter
