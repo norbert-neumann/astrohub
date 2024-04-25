@@ -1,4 +1,4 @@
-import {MongoClient} from 'mongodb'
+import {MongoClient, ObjectId} from 'mongodb'
 
 export async function connectToMongo(serverUrl) {
     const db = new MongoClient(serverUrl).db('AstroDb')
@@ -6,74 +6,76 @@ export async function connectToMongo(serverUrl) {
     const spotsCollection = db.collection('spots')
     const tripsCollection = db.collection('trips')
 
+    usersCollection.createIndex({username: 1}, {unique: true})
+    spotsCollection.createIndex({lattitude: 1, longitude: 1}, {unique: true})
+    tripsCollection.createIndex({spotId: 1, date: 1}, {unique: true})
+
     return {
         getUserByUsername(username) {
             return usersCollection.findOne(
-                {_id: username},
+                {username},
             )
         },
 
         updateUsername(currentUsername, newUsername) {
-            // TODO: somehow ask the db to check if newUsername
-            // is already taken
-            usersCollection.updateOne(
-                {_id: currentUsername},
-                {$set: {_id: newUsername}}
+            return usersCollection.updateOne(
+                {username: currentUsername},
+                {$set: {username: newUsername}}
             )
         },
 
-        addToFavouriteSpot(username, spot) {
+        addToFavouriteSpots(username, spot) {
             usersCollection.updateOne(
-                {_id: username},
+                {username},
                 {$addToSet: {favouriteSpots: spot._id}}
             )
         },
 
-        removeFromFavouriteSpot(username, spot) {
+        removeFromFavouriteSpots(username, spot) {
             usersCollection.updateOne(
-                {_id: username},
+                {username},
                 {$pull: {favouriteSpots: spot._id}}
             )
         },
 
         addToUpcomingTrips(username, trip) {
             usersCollection.updateOne(
-                {_id: username},
+                {username},
                 {$addToSet: {trips: trip._id}}
             )
         },
 
         removeFromUpcomingTrips(username, trip) {
             usersCollection.updateOne(
-                {_id: username},
+                {username},
                 {$pull: {trips: trip._id}}
             )
         },
 
         addToFriendRequests(username, user) {
             usersCollection.updateOne(
-                {_id: username},
+                {username},
                 {$addToSet: {friendRequests: user._id}}
             )
         },
 
         removeFromFriendRequests(username, user) {
             usersCollection.updateOne(
-                {_id: username},
+                {username},
                 {$pull: {friendRequests: user._id}}
             )
         },
 
         addToFriends(username, friend) {
             usersCollection.updateOne(
-                {_id: username},
+                {username},
                 {$addToSet: {friends: friend._id}}
             )
         },
 
         removeFromFriends(username, friend) {
             usersCollection.updateOne(
-                {_id: username},
+                {username},
                 {$pull: {friends: friend._id}}
             )
         },
@@ -93,29 +95,41 @@ export async function connectToMongo(serverUrl) {
             return spotsCollection.find().toArray()
         },
 
-        getSpotByName(name) {
+        getSpotByLocation(location) {
             return spotsCollection.findOne(
-                {name}
+                {
+                    lattitude: location.lattitude,
+                    longitude: location.longitude
+                }
             )
         },
 
         updateName(location, newName) {
             spotsCollection.updateOne(
-                {_id: location},
+                {
+                    lattitude: location.lattitude,
+                    longitude: location.longitude
+                },
                 {$set: {name: newName}}
             )
         },
 
         updateLightPollution(location, pollutionValue) {
             spotsCollection.updateOne(
-                {_id: location},
+                {
+                    lattitude: location.lattitude,
+                    longitude: location.longitude
+                },
                 {$set: {lightPollution: pollutionValue}}
             )
         },
 
         updateRating(location, newRating) {
             spotsCollection.updateOne(
-                {_id: location},
+                {
+                    lattitude: location.lattitude,
+                    longitude: location.longitude
+                },
                 {$set: {rating: newRating}} //TODO: use something else instead of $set?
             )
         },
@@ -125,33 +139,42 @@ export async function connectToMongo(serverUrl) {
         },
 
         deleteSpot(location) {
-            spotsCollection.deleteOne({_id: location})
+            spotsCollection.deleteOne({
+                lattitude: location.lattitude,
+                longitude: location.longitude
+            })
         },
 
         //-----------------------TRIPS-----------------------\\
 
-        getAllPublicTrips() {
-
+        getAllTrips() {
+            return tripsCollection.find().toArray()
         },
 
-        updateTripName(date, spotId, newName) {
+        updateTripName(spotId, date, newName) {
             tripsCollection.updateOne(
-                {name: {date, spotId}},
+                {spotId, date},
                 {$set: {name: newName}}
             )
         },
 
-        updateTripDate(currentDate, spotId, newDate) {
+        updateTripLocation(currentSpotId, date, newSpotId) {
             tripsCollection.updateOne(
-                {_id: {currentDate, spotId}},
-                {$set: {_id: {newDate, spotId}}}
+                {
+                    spotId: new ObjectId(currentSpotId),
+                    date: date
+                },
+                {$set: {spotId: new ObjectId(newSpotId)}}
             )
         },
 
-        updateTripVisibility(date, spotId, newVisibility) {
+        updateTripDate(spotId, currentDate, newDate) {
             tripsCollection.updateOne(
-                {_id: {date, spotId}},
-                {$set: {isPublic: newVisibility}}
+                {
+                    spotId: spotId,
+                    date: currentDate
+                },
+                {$set: {date: newDate}}
             )
         },
 
@@ -159,8 +182,8 @@ export async function connectToMongo(serverUrl) {
             await tripsCollection.insertOne(trip)
         },
 
-        deleteTrip(date, spotId) {
-            tripsCollection.deleteOne({date, spotId})
+        deleteTrip(spotId, date) {
+            tripsCollection.deleteOne({spotId, date})
         }
     }
 }
