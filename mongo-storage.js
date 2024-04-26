@@ -23,6 +23,24 @@ export async function connectToMongo(serverUrl) {
                 .map(id => usersCollection.findOne({_id: new ObjectId(id)})))
         },
 
+        async getFriendRequests(username) {
+            const user = await usersCollection.findOne({username})
+            return Promise.all(user.friendRequests
+                .map(id => usersCollection.findOne({_id: new ObjectId(id)})))
+        },
+
+        async getFavouriteSpots(username) {
+            const user = await usersCollection.findOne({username})
+            return Promise.all(user.favouriteSpots
+                .map(id => spotsCollection.findOne({_id: new ObjectId(id)})))
+        },
+
+        async getTrips(username) {
+            const user = await usersCollection.findOne({username})
+            return Promise.all(user.trips
+                .map(id => tripsCollection.findOne({_id: new ObjectId(id)})))
+        },
+
         updateUsername(currentUsername, newUsername) {
             return usersCollection.updateOne(
                 {username: currentUsername},
