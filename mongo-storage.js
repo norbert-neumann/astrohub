@@ -48,59 +48,66 @@ export async function connectToMongo(serverUrl) {
             )
         },
 
-        addToFavouriteSpots(username, spot) {
-            usersCollection.updateOne(
+        updateDisplayName(username, newDisplayName) {
+            return usersCollection.updateOne(
                 {username},
-                {$addToSet: {favouriteSpots: spot._id}}
+                {$set: {displayName: newDisplayName}}
             )
         },
 
-        removeFromFavouriteSpots(username, spot) {
+        addToFavouriteSpots(username, spotId) {
             usersCollection.updateOne(
                 {username},
-                {$pull: {favouriteSpots: spot._id}}
+                {$addToSet: {favouriteSpots: spotId}}
             )
         },
 
-        addToUpcomingTrips(username, trip) {
+        removeFromFavouriteSpots(username, spotId) {
             usersCollection.updateOne(
                 {username},
-                {$addToSet: {trips: trip._id}}
+                {$pull: {favouriteSpots: spotId}}
             )
         },
 
-        removeFromUpcomingTrips(username, trip) {
+        addToTrips(username, tripId) {
             usersCollection.updateOne(
                 {username},
-                {$pull: {trips: trip._id}}
+                {$addToSet: {trips: tripId}}
             )
         },
 
-        addToFriendRequests(username, user) {
+        removeFromUpcomingTrips(username, tripId) {
             usersCollection.updateOne(
                 {username},
-                {$addToSet: {friendRequests: user._id}}
+                {$pull: {trips: tripId}}
             )
         },
 
-        removeFromFriendRequests(username, user) {
+        addToFriendRequests(username, userId) {
             usersCollection.updateOne(
                 {username},
-                {$pull: {friendRequests: user._id}}
+                {$addToSet: {friendRequests: userId}}
             )
         },
 
-        addToFriends(username, friend) {
+        removeFromFriendRequests(username, userId) {
             usersCollection.updateOne(
                 {username},
-                {$addToSet: {friends: friend._id}}
+                {$pull: {friendRequests: userId}}
             )
         },
 
-        removeFromFriends(username, friend) {
+        addToFriends(userId, friendId) {
             usersCollection.updateOne(
-                {username},
-                {$pull: {friends: friend._id}}
+                {_id: userId},
+                {$addToSet: {friends: friendId}}
+            )
+        },
+
+        removeFromFriends(userId, friendId) {
+            usersCollection.updateOne(
+                {_id: userId},
+                {$pull: {friends: friendId}}
             )
         },
 
@@ -108,8 +115,8 @@ export async function connectToMongo(serverUrl) {
             await usersCollection.insertOne(user)
         },
 
-        deleteUser(username) {
-            usersCollection.deleteOne({username})
+        async deleteUser(username) {
+            await usersCollection.deleteOne({username})
         },
 
         //-----------------------SPOTS-----------------------\\
