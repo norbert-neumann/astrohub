@@ -11,89 +11,89 @@ export async function connectToMongo(serverUrl) {
     tripsCollection.createIndex({spotId: 1, date: 1}, {unique: true})
 
     return {
-        getUserByUsername(username) {
+        getByUserId(userId) {
             return usersCollection.findOne(
-                {username},
+                {_id: userId},
             )
         },
 
-        async getFriends(username) {
-            const user = await usersCollection.findOne({username})
+        async getFriends(userId) {
+            const user = await usersCollection.findOne({_id: userId})
             return Promise.all(user.friends
                 .map(id => usersCollection.findOne({_id: new ObjectId(id)})))
         },
 
-        async getFriendRequests(username) {
-            const user = await usersCollection.findOne({username})
+        async getFriendRequests(userId) {
+            const user = await usersCollection.findOne({_id: userId})
             return Promise.all(user.friendRequests
                 .map(id => usersCollection.findOne({_id: new ObjectId(id)})))
         },
 
-        async getFavouriteSpots(username) {
-            const user = await usersCollection.findOne({username})
+        async getFavouriteSpots(userId) {
+            const user = await usersCollection.findOne({_id: userId})
             return Promise.all(user.favouriteSpots
                 .map(id => spotsCollection.findOne({_id: new ObjectId(id)})))
         },
 
-        async getTrips(username) {
-            const user = await usersCollection.findOne({username})
+        async getTrips(userId) {
+            const user = await usersCollection.findOne({_id: userId})
             return Promise.all(user.trips
                 .map(id => tripsCollection.findOne({_id: new ObjectId(id)})))
         },
 
-        updateUsername(currentUsername, newUsername) {
+        updateUsername(userId, newUsername) {
             return usersCollection.updateOne(
-                {username: currentUsername},
+                {_id: userId},
                 {$set: {username: newUsername}}
             )
         },
 
-        updateDisplayName(username, newDisplayName) {
+        updateDisplayName(userId, newDisplayName) {
             return usersCollection.updateOne(
-                {username},
+                {_id: userId},
                 {$set: {displayName: newDisplayName}}
             )
         },
 
-        addToFavouriteSpots(username, spotId) {
+        addToFavouriteSpots(userId, spotId) {
             usersCollection.updateOne(
-                {username},
+                {_id: userId},
                 {$addToSet: {favouriteSpots: spotId}}
             )
         },
 
-        removeFromFavouriteSpots(username, spotId) {
+        removeFromFavouriteSpots(userId, spotId) {
             usersCollection.updateOne(
-                {username},
+                {_id: userId},
                 {$pull: {favouriteSpots: spotId}}
             )
         },
 
-        addToTrips(username, tripId) {
+        addToTrips(userId, tripId) {
             usersCollection.updateOne(
-                {username},
+                {_id: userId},
                 {$addToSet: {trips: tripId}}
             )
         },
 
-        removeFromUpcomingTrips(username, tripId) {
+        removeFromTrips(userId, tripId) {
             usersCollection.updateOne(
-                {username},
+                {_id: userId},
                 {$pull: {trips: tripId}}
             )
         },
 
-        addToFriendRequests(username, userId) {
+        addToFriendRequests(userId, senderId) {
             usersCollection.updateOne(
-                {username},
-                {$addToSet: {friendRequests: userId}}
+                {_id: userId},
+                {$addToSet: {friendRequests: senderId}}
             )
         },
 
-        removeFromFriendRequests(username, userId) {
+        removeFromFriendRequests(userId, senderId) {
             usersCollection.updateOne(
-                {username},
-                {$pull: {friendRequests: userId}}
+                {_id: userId},
+                {$pull: {friendRequests: senderId}}
             )
         },
 
@@ -115,8 +115,8 @@ export async function connectToMongo(serverUrl) {
             await usersCollection.insertOne(user)
         },
 
-        async deleteUser(username) {
-            await usersCollection.deleteOne({username})
+        async deleteUser(userId) {
+            await usersCollection.deleteOne({_id: userId})
         },
 
         //-----------------------SPOTS-----------------------\\
