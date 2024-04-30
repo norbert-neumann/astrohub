@@ -4,7 +4,7 @@ function createUserRouter(repository) {
     const router = express.Router()
 
     router.get('/:userId', async (req, res) => {
-        const user = await repository.getUserByUsername(req.params.userId)
+        const user = await repository.getUserById(req.params.userId)
         res.send(user)
     })
 

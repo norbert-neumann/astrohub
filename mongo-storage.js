@@ -7,13 +7,13 @@ export async function connectToMongo(serverUrl) {
     const tripsCollection = db.collection('trips')
 
     usersCollection.createIndex({username: 1}, {unique: true})
-    spotsCollection.createIndex({lattitude: 1, longitude: 1}, {unique: true})
+    spotsCollection.createIndex({location: '2dsphere'}, {unique: true})
     tripsCollection.createIndex({spotId: 1, date: 1}, {unique: true})
 
     return {
-        getByUserId(userId) {
+        getUserById(userId) {
             return usersCollection.findOne(
-                {_id: userId},
+                {_id: new ObjectId(userId)},
             )
         },
 
@@ -122,45 +122,85 @@ export async function connectToMongo(serverUrl) {
         //-----------------------SPOTS-----------------------\\
 
         // TODO: pagination, sort by distance and/or rating
-        getAllSpots() {
-            return spotsCollection.find().toArray()
+        getAllSpots(sort, skip, limit) {
+            return spotsCollection.find()
+                .sort(sort)
+                .skip(skip)
+                .limit(limit)
+                .toArray()
         },
 
-        getSpotByLocation(location) {
-            return spotsCollection.findOne(
+        getSpotById(spotId) {
+            return spotsCollection.findOne({_id: spotId})
+        },
+
+        getSpotsByName(name) {
+            return spotsCollection.find({name}).toArray()
+        },
+
+        getSpotsByPartialName(partialName) {
+            const nameRegex = new RegExp(partialName, 'i');
+            const filter = { name: { $regex: nameRegex } };
+            const sort = { name: 1 };
+            //return this.getAllSpots(filter, sort, undefined, undefined)
+            return spotsCollection.find(filter).sort(sort).toArray()
+        },
+
+        getSpotsSortedByDistance(point, maxDistance) {
+            return spotsCollection.find(
                 {
-                    lattitude: location.lattitude,
-                    longitude: location.longitude
+                    location: { $nearSphere :
+                        {
+                          $geometry: { type: "Point",  coordinates: point },
+                          $maxDistance: maxDistance
+                        }
+                     }
                 }
-            )
+            ).toArray()
         },
 
-        updateName(location, newName) {
-            spotsCollection.updateOne(
+        getSpotsSortedByDistanceIncludeDistance(point, maxDistance) {
+            return spotsCollection.aggregate([
                 {
-                    lattitude: location.lattitude,
-                    longitude: location.longitude
+                    $geoNear: {
+                        near: {
+                            type: "Point",
+                            coordinates: point
+                        },
+                        distanceField: "distance",
+                        maxDistance: maxDistance,
+                        spherical: true
+                    }
                 },
+                {
+                    $project: {
+                        _id: 0,
+                        name: 1,
+                        location: 1,
+                        distance: 1
+                    }
+                }
+            ]).toArray();
+        },
+
+
+        updateName(spotId, newName) {
+            spotsCollection.updateOne(
+                {_id: spotId},
                 {$set: {name: newName}}
             )
         },
 
-        updateLightPollution(location, pollutionValue) {
+        updateLightPollution(spotId, pollutionValue) {
             spotsCollection.updateOne(
-                {
-                    lattitude: location.lattitude,
-                    longitude: location.longitude
-                },
+                {_id: spotId},
                 {$set: {lightPollution: pollutionValue}}
             )
         },
 
-        updateRating(location, newRating) {
+        updateRating(spotId, newRating) {
             spotsCollection.updateOne(
-                {
-                    lattitude: location.lattitude,
-                    longitude: location.longitude
-                },
+                {_id: spotId},
                 {$set: {rating: newRating}} //TODO: use something else instead of $set?
             )
         },
@@ -169,11 +209,8 @@ export async function connectToMongo(serverUrl) {
             await spotsCollection.insertOne(spot)
         },
 
-        deleteSpot(location) {
-            spotsCollection.deleteOne({
-                lattitude: location.lattitude,
-                longitude: location.longitude
-            })
+        deleteSpot(spotId) {
+            spotsCollection.deleteOne({_id: spotId})
         },
 
         //-----------------------TRIPS-----------------------\\
