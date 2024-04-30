@@ -10,9 +10,9 @@ export function createApp(repository) {
     app.use(express.static('public'))
     app.use(express.json({limit: '1mb'}))
 
-    app.use('/users', userRouter(repository))
-    app.use('/spots', spotRouter(repository))
-    app.use('/trips', tripRouter(repository))
+    app.use('/users', userRouter(repository.users))
+    app.use('/spots', spotRouter(repository.spots))
+    app.use('/trips', tripRouter(repository.trips))
     app.use('/forecast', forecastRouter(repository))
 
     return app
