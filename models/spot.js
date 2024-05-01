@@ -4,8 +4,8 @@ export default function createSpotFunctions(spotsCollection) {
     return {
 
          // TODO: pagination, sort by distance and/or rating
-         getAllSpots(sort, skip, limit) {
-            return spotsCollection.find()
+         getAllSpots({filter={}, sort={}, skip=0, limit=0}) {
+            return spotsCollection.find(filter)
                 .sort(sort)
                 .skip(skip)
                 .limit(limit)
@@ -20,37 +20,36 @@ export default function createSpotFunctions(spotsCollection) {
             return spotsCollection.find({name}).toArray()
         },
 
-        getSpotsByPartialName(partialName) {
-            const nameRegex = new RegExp(partialName, 'i');
-            const filter = { name: { $regex: nameRegex } };
-            const sort = { name: 1 };
-            //return this.getAllSpots(filter, sort, undefined, undefined)
-            return spotsCollection.find(filter).sort(sort).toArray()
-        },
-
-        getSpotsSortedByDistance(point, maxDistance) {
-            return spotsCollection.find(
-                {
-                    location: { $nearSphere :
-                        {
-                          $geometry: { type: "Point",  coordinates: point },
-                          $maxDistance: maxDistance
-                        }
-                     }
+        getSpotsWithinDistance(origin, distanceInKm=50.0) {
+            const pointP = { type: "Point", coordinates: [origin.longitude, origin.lattitude] }
+            const filter = {
+                location: {
+                    $geoWithin: {
+                        $centerSphere: [pointP.coordinates, distanceInKm / 6371]
+                    }
                 }
-            ).toArray()
+            }
+            return this.getAllSpots({filter, sort: {rating: -1}})
         },
 
-        getSpotsSortedByDistanceIncludeDistance(point, maxDistance) {
+        getSpotsByPartialName(partialName) {
+            const nameRegex = new RegExp(partialName, 'i')
+            const filter = { name: { $regex: nameRegex } }
+            const sort = { name: 1 }
+            //return this.getAllSpots(filter, sort, undefined, undefined)
+            return this.getAllSpots({filter, sort})
+        },
+
+        getSpotsSortedByDistanceIncludeDistance(origin, maxDistanceInKm) {
             return spotsCollection.aggregate([
                 {
                     $geoNear: {
                         near: {
                             type: "Point",
-                            coordinates: point
+                            coordinates: [origin.longitude, origin.lattitude]
                         },
                         distanceField: "distance",
-                        maxDistance: maxDistance,
+                        maxDistance: maxDistanceInKm * 1000,
                         spherical: true
                     }
                 },

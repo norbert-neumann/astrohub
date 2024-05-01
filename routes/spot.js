@@ -4,24 +4,24 @@ function createSpotRouter(repository) {
     const router = express.Router()
 
     router.get('/distance', async (req, res) => {
-        const location = [19.1, 47.3]
-        const result = await repository.getSpotsSortedByDistanceIncludeDistance(location, 32000)
+        const origin = req.body.origin
+        const distanceInKm = req.body.distance || undefined
+        const result = await repository.getSpotsSortedByDistanceIncludeDistance(origin, distanceInKm)
         res.send(result)
     })
 
     router.get('/rating', async (req, res) => {
-        const skip = req.body.skip ? parseInt(req.body.skip) : undefined
-        const limit = req.body.limit ? parseInt(req.body.limit) : undefined
+        const skip = req.body.skip || undefined
+        const limit = req.body.limit || undefined
         
-        const direction = req.body.direction === 'ascending' ? 1 : -1
+        const direction = req.body.orderBy === 'asc' ? 1 : -1
         const sort = {rating: direction}
-        console.log(skip, limit, sort)
-        const spots = await repository.getAllSpots(sort, skip, limit)
-        console.log(spots)
+        
+        const spots = await repository.getAllSpots({sort, skip, limit})
         res.send(spots)
     }),
 
-    router.get('/:name', async (req, res) => {
+    router.get('/match-name/:name', async (req, res) => {
         const spots = await repository.getSpotsByPartialName(req.params.name)
         res.send(spots)
     })
@@ -32,7 +32,11 @@ function createSpotRouter(repository) {
     })
 
     router.get('/', async (req, res) => {
-        res.send({data: 'GET spot'})
+        const origin = req.body.origin
+        const distanceInKm = req.body.distance || undefined
+        console.log(origin, distanceInKm)
+        const spots = await repository.getSpotsWithinDistance(origin, distanceInKm)
+        res.send(spots)
     })
 
     router.post('/', async (req, res) => {
