@@ -3,22 +3,38 @@ import express from 'express'
 function createTripRouter(repository) {
     const router = express.Router()
 
-    router.get('/', async (req, res) => {
-        res.send({data: 'GET trip'})
+    // maxDate, maxDistance
+    router.get('/upcoming', async (req, res) => {
+        const origin = req.body.origin
+        const maxDistance = req.body.distance || undefined
+        const result = await repository.getUpcomingTrips(origin, maxDistance)
+        res.send(result)
+    })
+
+    router.get('/:tripId', async (req, res) => {
+        const trip = repository.getTripById(req.params.tripId)
+        res.send(trip)
     })
     
     router.post('/', async (req, res) => {
-        res.send({data: 'POST trip'})
-    })
-    
-    router.put('/location', async (req, res) => {
-        let currentSpotId = req.query.currentSpotId
-        let newSpotId = req.query.newSpotId
-        let result = await repository.updateTripLocation(currentSpotId, newSpotId)
+        const newTrip = {
+            spotId: req.body.spotId,
+            date: req.body.date,
+            name: req.body.name
+        }
+        const result = await repository.saveTrip(newTrip)
         res.send(result)
     })
     
-    router.delete('/', async (req, res) => {
+    router.patch('/:tripId/date', async (req, res) => {
+        const tripId = req.params.tripId
+        const newDate = req.body.newDate
+        let result = await repository.updateDate(tripId, newDate)
+        res.send(result)
+    })
+    
+    router.delete('/:tripId', async (req, res) => {
+        repository.deleteTrip(req.params.tripId)
         res.send({data: 'DELETE trip'})
     })
 

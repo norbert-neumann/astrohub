@@ -13,7 +13,7 @@ export default function createSpotFunctions(spotsCollection) {
         },
 
         getSpotById(spotId) {
-            return spotsCollection.findOne({_id: spotId})
+            return spotsCollection.findOne({_id: new ObjectId(spotId)})
         },
 
         getSpotsByName(name) {
@@ -36,7 +36,6 @@ export default function createSpotFunctions(spotsCollection) {
             const nameRegex = new RegExp(partialName, 'i')
             const filter = { name: { $regex: nameRegex } }
             const sort = { name: 1 }
-            //return this.getAllSpots(filter, sort, undefined, undefined)
             return this.getAllSpots({filter, sort})
         },
 
@@ -67,21 +66,21 @@ export default function createSpotFunctions(spotsCollection) {
 
         updateName(spotId, newName) {
             spotsCollection.updateOne(
-                {_id: spotId},
+                {_id: new ObjectId(spotId)},
                 {$set: {name: newName}}
             )
         },
 
         updateLightPollution(spotId, pollutionValue) {
             spotsCollection.updateOne(
-                {_id: spotId},
+                {_id: new Object(spotId)},
                 {$set: {lightPollution: pollutionValue}}
             )
         },
 
         updateRating(spotId, newRating) {
             spotsCollection.updateOne(
-                {_id: spotId},
+                {_id: new ObjectId(spotId)},
                 {$set: {rating: newRating}} //TODO: use something else instead of $set?
             )
         },
@@ -91,7 +90,7 @@ export default function createSpotFunctions(spotsCollection) {
         },
 
         deleteSpot(spotId) {
-            spotsCollection.deleteOne({_id: spotId})
+            spotsCollection.deleteOne({_id: new ObjectId(spotId)})
         }
     }
 }

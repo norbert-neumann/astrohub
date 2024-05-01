@@ -16,7 +16,7 @@ export async function connectToMongo(serverUrl) {
 
     const userFunctions = createUserFunctions(usersCollection, spotsCollection, tripsCollection)
     const spotFunctions = createSpotFunctions(spotsCollection)
-    const tripFunctions = createTripFunctions(tripsCollection)
+    const tripFunctions = createTripFunctions(tripsCollection, spotsCollection)
 
     return {
         users: userFunctions,

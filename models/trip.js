@@ -1,34 +1,71 @@
 import { ObjectId } from "mongodb"
 
-export default function createTripFunctions(tripsCollection) {
+export default function createTripFunctions(tripsCollection, spotsCollection) {
     return {
         getAllTrips() {
             return tripsCollection.find().toArray()
         },
 
-        updateTripName(spotId, date, newName) {
+        async getUpcomingTrips(origin, distanceInKm=50.0) {
+            const geoOrigin = {
+                type: "Point",
+                coordinates: [origin.longitude, origin.lattitude]
+            }
+
+            const spotsWithinDistance = await spotsCollection.find({
+                location: {
+                    $geoWithin: {
+                        $centerSphere: [geoOrigin.coordinates, distanceInKm / 6371]
+                    }
+                }
+            }).toArray();
+
+            const upcomingTrips = await tripsCollection.aggregate([
+                {
+                    $lookup: {
+                        from: "spots",
+                        localField: "spotId",
+                        foreignField: "_id",
+                        as: "spots"
+                    }
+                },
+                {
+                    $match: {
+                      $and: [
+                        { "spots": { $in: spotsWithinDistance } },
+                        { date: { $gt: new Date() } }
+                      ]
+                    }
+                  },
+                {
+                    $unwind: "$spots"
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        date: 1,
+                        spot: "$spots"
+                    }
+                }
+            ]).sort({date: 1}).toArray()
+
+            return upcomingTrips
+        },
+
+        getTripById(tripId) {
+            return tripsCollection.findOne({_id: tripId})
+        },
+
+        updateTripName(tripId, newName) {
             tripsCollection.updateOne(
-                {spotId, date},
+                {_id: tripId},
                 {$set: {name: newName}}
             )
         },
 
-        updateTripLocation(currentSpotId, date, newSpotId) {
+        updateDate(tripId, newDate) {
             tripsCollection.updateOne(
-                {
-                    spotId: new ObjectId(currentSpotId),
-                    date: date
-                },
-                {$set: {spotId: new ObjectId(newSpotId)}}
-            )
-        },
-
-        updateTripDate(spotId, currentDate, newDate) {
-            tripsCollection.updateOne(
-                {
-                    spotId: spotId,
-                    date: currentDate
-                },
+                {_id: tripId},
                 {$set: {date: newDate}}
             )
         },
@@ -37,8 +74,8 @@ export default function createTripFunctions(tripsCollection) {
             await tripsCollection.insertOne(trip)
         },
 
-        deleteTrip(spotId, date) {
-            tripsCollection.deleteOne({spotId, date})
+        deleteTrip(tripId) {
+            tripsCollection.deleteOne({_id: tripId})
         }
     }
 }
