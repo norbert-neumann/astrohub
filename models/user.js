@@ -4,7 +4,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
     return {
         getUserById(userId) {
             return usersCollection.findOne(
-                {_id: new ObjectId(userId)},
+                {_id: ObjectId.createFromHexString(userId)},
             )
         },
 
@@ -121,7 +121,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
 
         updateDisplayName(userId, newDisplayName) {
             return usersCollection.updateOne(
-                {_id: userId},
+                {_id: new ObjectId(userId)},
                 {$set: {displayName: newDisplayName}}
             )
         },

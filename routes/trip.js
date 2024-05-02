@@ -26,6 +26,13 @@ function createTripRouter(repository) {
         res.send(result)
     })
     
+    router.patch('/:tripId/name', async (req, res) => {
+        const tripId = req.params.tripId
+        const newName = req.body.newName
+        let result = await repository.updateName(tripId, newName)
+        res.send(result)
+    })
+
     router.patch('/:tripId/date', async (req, res) => {
         const tripId = req.params.tripId
         const newDate = req.body.newDate

@@ -51,7 +51,7 @@ function createUserRouter(repository) {
     router.post('/:userId/trips', async (req, res) => {
         const userId = req.params.userId
         const tripId = req.body.tripId
-        repository.addToTrips(username, tripId)
+        repository.addToTrips(userId, tripId)
         res.send({data: 'POST add trip'})
     })
 
@@ -77,7 +77,7 @@ function createUserRouter(repository) {
         res.send(result)
     })
 
-    router.patch('/:username/displayName', async (req, res) => {
+    router.patch('/:userId/displayName', async (req, res) => {
         let userId = req.params.userId
         let newDisplayName = req.body.newDisplayName
         let result = await repository.updateDisplayName(userId, newDisplayName)

@@ -56,7 +56,7 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
             return tripsCollection.findOne({_id: tripId})
         },
 
-        updateTripName(tripId, newName) {
+        updateName(tripId, newName) {
             tripsCollection.updateOne(
                 {_id: tripId},
                 {$set: {name: newName}}
