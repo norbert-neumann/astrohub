@@ -1,4 +1,6 @@
 import express from 'express'
+import validate from '../validator.js'
+import {addSpotSchema} from '../schema.js'
 
 function createSpotRouter(repository) {
     const router = express.Router()
@@ -39,15 +41,15 @@ function createSpotRouter(repository) {
         res.send(spots)
     })
 
-    router.post('/', async (req, res) => {
+    router.post('/', validate(addSpotSchema), async (req, res) => {
+        console.log(req.body)
         const spot = {
-            lattitude: req.body.lattitude,
-            longitude: req.body.longitude,
+            location: [req.body.lattitude, req.body.longitude],
             name: req.body.name,
             rating: 0,
-            lightPollution: undefined
+            lightPollution: req.body.lightPollution || undefined
         }
-        repository.saveSpot(spot)
+        //repository.saveSpot(spot)
         res.send({data: 'POST spot'})
     })
 

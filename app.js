@@ -15,5 +15,10 @@ export function createApp(repository) {
     app.use('/trips', tripRouter(repository.trips))
     app.use('/forecast', forecastRouter(repository))
 
+    app.use((err, req, res, next) => {
+        console.log('An error has occoured!')
+        res.status(400).send(err.message)
+    })
+
     return app
 }
