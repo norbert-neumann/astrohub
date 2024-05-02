@@ -9,27 +9,107 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
         },
 
         async getFriends(userId) {
-            const user = await usersCollection.findOne({_id: userId})
-            return Promise.all(user.friends
-                .map(id => usersCollection.findOne({_id: new ObjectId(id)})))
+            const result = await usersCollection.aggregate([
+                {
+                    $match: {
+                        _id: new ObjectId(userId)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "friends",
+                        foreignField: "_id",
+                        as: "friends"
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        friends: 1
+                    }
+                }
+            ]).toArray()
+            
+            return result[0]
         },
 
         async getFriendRequests(userId) {
-            const user = await usersCollection.findOne({_id: userId})
-            return Promise.all(user.friendRequests
-                .map(id => usersCollection.findOne({_id: new ObjectId(id)})))
+            const result = await usersCollection.aggregate([
+                {
+                    $match: {
+                        _id: new ObjectId(userId)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "friendRequests",
+                        foreignField: "_id",
+                        as: "friendRequests"
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        friendRequests: 1
+                    }
+                }
+            ]).toArray()
+            
+            return result[0]
         },
 
         async getFavouriteSpots(userId) {
-            const user = await usersCollection.findOne({_id: userId})
-            return Promise.all(user.favouriteSpots
-                .map(id => spotsCollection.findOne({_id: new ObjectId(id)})))
+            const result = await usersCollection.aggregate([
+                {
+                    $match: {
+                        _id: new ObjectId(userId)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "spots",
+                        localField: "favouriteSpots",
+                        foreignField: "_id",
+                        as: "favouriteSpots"
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        favouriteSpots: 1
+                    }
+                }
+            ]).toArray()
+            
+            return result[0]
         },
 
         async getTrips(userId) {
-            const user = await usersCollection.findOne({_id: userId})
-            return Promise.all(user.trips
-                .map(id => tripsCollection.findOne({_id: new ObjectId(id)})))
+            const result = await usersCollection.aggregate([
+                {
+                    $match: {
+                        _id: new ObjectId(userId)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "trips",
+                        localField: "trips",
+                        foreignField: "_id",
+                        as: "trips"
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        trips: 1
+                    }
+                }
+            ]).toArray()
+
+            return result[0]
         },
 
         updateUsername(userId, newUsername) {
