@@ -1,6 +1,6 @@
 import express from 'express'
 import validate from '../validator.js'
-import {addSpotSchema} from '../schema.js'
+import { addSpotSchema } from '../schema.js'
 
 function createSpotRouter(repository) {
     const router = express.Router()
@@ -49,10 +49,11 @@ function createSpotRouter(repository) {
             rating: 0,
             lightPollution: req.body.lightPollution || undefined
         }
-        //repository.saveSpot(spot)
+        repository.saveSpot(spot)
         res.send({data: 'POST spot'})
     })
 
+    // TODO: add schema for rating?
     router.patch('/:spotId/rating', async (req, res) => {
         const spotId = req.params.spotId
         const newRating = req.body.newRating

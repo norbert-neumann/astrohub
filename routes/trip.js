@@ -1,4 +1,6 @@
 import express from 'express'
+import validate from '../validator.js'
+import { addTripSchema } from '../schema.js'
 
 function createTripRouter(repository) {
     const router = express.Router()
