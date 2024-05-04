@@ -62,9 +62,8 @@ export const dateSchema = {
     type: 'object',
     properties: {
         date: {
-            type: 'string',
-            format: 'date-time',
-            minimum: new Date().toISOString()
+            type: 'integer',
+            minimum: Date.now()
         }
     },
     required: ['date']
@@ -76,8 +75,8 @@ export const tripSchema = {
     properties: {
         spotId: {
             type: 'string',
-            minimum: 24,
-            maximum: 24
+            minLength: 24,
+            minLength: 24
         },
         ...dateSchema.properties,
         ...nameSchema.properties
@@ -90,9 +89,13 @@ export const userSchema = {
     $schema: "http://json-schema.org/draft-07/schema#",
     type: 'object',
     properties: {
-        username: { ...nameSchema }, // TODO: ha ez így nem jó, akkor nameSchema type: string
-        displayName: { ...nameSchema}
+        username: {
+            ...nameSchema.properties.name,
+        },
+        displayName: {
+            ...nameSchema.properties.name
+        }
     },
     required: ['username', 'displayName'],
-    additionalProperties: true
+    additionalProperties: true,
 }

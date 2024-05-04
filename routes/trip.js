@@ -1,6 +1,6 @@
 import express from 'express'
 import validate from '../validator.js'
-import { addTripSchema } from '../schema.js'
+import { tripSchema } from '../schema.js'
 
 function createTripRouter(repository) {
     const router = express.Router()
@@ -18,13 +18,13 @@ function createTripRouter(repository) {
         res.send(trip)
     })
     
-    router.post('/', async (req, res) => {
+    router.post('/', validate(tripSchema), async (req, res) => {
         const newTrip = {
             spotId: req.body.spotId,
             date: req.body.date,
             name: req.body.name
         }
-        const result = await repository.saveTrip(newTrip)
+        const result = 'OK' //await repository.saveTrip(newTrip)
         res.send(result)
     })
     

@@ -1,4 +1,6 @@
 import express from 'express'
+import validate from '../validator.js'
+import { userSchema } from '../schema.js'
 
 function createUserRouter(repository) {
     const router = express.Router()
@@ -28,7 +30,7 @@ function createUserRouter(repository) {
         res.send(user)
     })
 
-    router.post('/', async (req, res) => {
+    router.post('/', validate(userSchema), async (req, res) => {
         const user = {
             username: req.body.username,
             displayName: req.body.displayName,
@@ -37,7 +39,7 @@ function createUserRouter(repository) {
             friends: [],
             friendRequests: []
         }
-        repository.saveUser(user)
+        //repository.saveUser(user)
         res.send({data: 'POST user'})
     })
 
