@@ -13,7 +13,7 @@ export default function createSpotFunctions(spotsCollection) {
         },
 
         getSpotById(spotId) {
-            return spotsCollection.findOne({_id: new ObjectId(spotId)})
+            return spotsCollection.findOne({_id: ObjectId.createFromHexString(spotId)})
         },
 
         getSpotsByName(name) {
@@ -66,28 +66,28 @@ export default function createSpotFunctions(spotsCollection) {
 
         updateName(spotId, newName) {
             spotsCollection.updateOne(
-                {_id: new ObjectId(spotId)},
+                {_id: ObjectId.createFromHexString(spotId)},
                 {$set: {name: newName}}
             )
         },
 
         updateLightPollution(spotId, pollutionValue) {
             spotsCollection.updateOne(
-                {_id: new Object(spotId)},
+                {_id: ObjectId.createFromHexString(spotId)},
                 {$set: {lightPollution: pollutionValue}}
             )
         },
 
         updateName(spotId, newName) {
             spotsCollection.updateOne(
-                {_id: new ObjectId(spotId)},
+                {_id: ObjectId.createFromHexString(spotId)},
                 {$set: {name: newName}}
             )
         },
 
         updateRating(spotId, newRating) {
             spotsCollection.updateOne(
-                {_id: new ObjectId(spotId)},
+                {_id: ObjectId.createFromHexString(spotId)},
                 {$set: {rating: newRating}} //TODO: use something else instead of $set?
             )
         },
@@ -97,7 +97,7 @@ export default function createSpotFunctions(spotsCollection) {
         },
 
         deleteSpot(spotId) {
-            spotsCollection.deleteOne({_id: new ObjectId(spotId)})
+            spotsCollection.deleteOne({_id: ObjectId.createFromHexString(spotId)})
         }
     }
 }

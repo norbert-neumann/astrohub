@@ -121,64 +121,64 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
 
         updateDisplayName(userId, newDisplayName) {
             return usersCollection.updateOne(
-                {_id: new ObjectId(userId)},
+                {_id: ObjectId.createFromHexString(userId)},
                 {$set: {displayName: newDisplayName}}
             )
         },
 
         addToFavouriteSpots(userId, spotId) {
             usersCollection.updateOne(
-                {_id: userId},
-                {$addToSet: {favouriteSpots: spotId}}
+                {_id: ObjectId.createFromHexString(userId)},
+                {$addToSet: {favouriteSpots: ObjectId.createFromHexString(spotId)}}
             )
         },
 
         removeFromFavouriteSpots(userId, spotId) {
             usersCollection.updateOne(
-                {_id: userId},
-                {$pull: {favouriteSpots: spotId}}
+                {_id: ObjectId.createFromHexString(userId)},
+                {$pull: {favouriteSpots: ObjectId.createFromHexString(spotId)}}
             )
         },
 
         addToTrips(userId, tripId) {
             usersCollection.updateOne(
-                {_id: userId},
-                {$addToSet: {trips: tripId}}
+                {_id: ObjectId.createFromHexString(userId)},
+                {$addToSet: {trips: ObjectId.createFromHexString(tripId)}}
             )
         },
 
         removeFromTrips(userId, tripId) {
             usersCollection.updateOne(
-                {_id: userId},
-                {$pull: {trips: tripId}}
+                {_id: ObjectId.createFromHexString(userId)},
+                {$pull: {trips: ObjectId.createFromHexString(tripId)}}
             )
         },
 
         addToFriendRequests(userId, senderId) {
             usersCollection.updateOne(
-                {_id: userId},
-                {$addToSet: {friendRequests: senderId}}
+                {_id: ObjectId.createFromHexString(userId)},
+                {$addToSet: {friendRequests: ObjectId.createFromHexString(senderId)}}
             )
         },
 
         removeFromFriendRequests(userId, senderId) {
             usersCollection.updateOne(
-                {_id: userId},
-                {$pull: {friendRequests: senderId}}
+                {_id: ObjectId.createFromHexString(userId)},
+                {$pull: {friendRequests: ObjectId.createFromHexString(senderId)}}
             )
         },
 
         addToFriends(userId, friendId) {
             usersCollection.updateOne(
-                {_id: userId},
-                {$addToSet: {friends: friendId}}
+                {_id: ObjectId.createFromHexString(userId)},
+                {$addToSet: {friends: ObjectId.createFromHexString(friendId)}}
             )
         },
 
         removeFromFriends(userId, friendId) {
             usersCollection.updateOne(
                 {_id: userId},
-                {$pull: {friends: friendId}}
+                {$pull: {friends: ObjectId.createFromHexString(friendId)}}
             )
         },
 
@@ -187,7 +187,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
         },
 
         async deleteUser(userId) {
-            await usersCollection.deleteOne({_id: userId})
+            await usersCollection.deleteOne({_id: ObjectId.createFromHexString(userId)})
         },
     }
 }
