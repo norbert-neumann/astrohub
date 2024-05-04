@@ -116,6 +116,6 @@ export const displayNameSchema = {
             ...nameSchema.properties.name
         }
     },
-    required: ['newUsername'],
+    required: ['newDisplayName'],
     additionalProperties: true
 }
