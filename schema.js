@@ -1,3 +1,16 @@
+export const nameSchema = {
+    $schema: "http://json-schema.org/draft-07/schema#",
+    type: 'object',
+    properties: {
+        name: {
+            type: 'string',
+            minLength: 6,
+            maxLength: 30
+        }
+    },
+    required: ['name']
+}
+
 export const spotSchema = {
     $schema: "http://json-schema.org/draft-07/schema#",
     type : 'object',
@@ -14,11 +27,7 @@ export const spotSchema = {
             maximum: 180.0
         },
 
-        name: {
-            type: 'string',
-            minLength: 6,
-            maxLength: 30
-        },
+        ...nameSchema.properties,
 
         lightPollution: {
             type: 'number',
@@ -43,19 +52,6 @@ export const ratingSchema = {
     required: ['rating']
 }
 
-
-export const nameSchema = {
-    $schema: "http://json-schema.org/draft-07/schema#",
-    type: 'object',
-    properties: {
-        name: {
-            type: 'string',
-            minLength: 6,
-            maxLength: 30
-        }
-    },
-    required: ['name']
-}
 
 export const dateSchema = {
     $schema: "http://json-schema.org/draft-07/schema#",
@@ -98,4 +94,28 @@ export const userSchema = {
     },
     required: ['username', 'displayName'],
     additionalProperties: true,
+}
+
+export const usernameSchema = {
+    $schema: "http://json-schema.org/draft-07/schema#",
+    type: 'object',
+    properties: {
+        newUsername: {
+            ...nameSchema.properties.name
+        }
+    },
+    required: ['newUsername'],
+    additionalProperties: true
+}
+
+export const displayNameSchema = {
+    $schema: "http://json-schema.org/draft-07/schema#",
+    type: 'object',
+    properties: {
+        newDisplayName: {
+            ...nameSchema.properties.name
+        }
+    },
+    required: ['newUsername'],
+    additionalProperties: true
 }

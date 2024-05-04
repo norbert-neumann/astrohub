@@ -1,6 +1,6 @@
 import express from 'express'
 import validate from '../validator.js'
-import { userSchema } from '../schema.js'
+import { displayNameSchema, userSchema, usernameSchema } from '../schema.js'
 
 function createUserRouter(repository) {
     const router = express.Router()
@@ -72,14 +72,14 @@ function createUserRouter(repository) {
     })
 
     // TODO: patch esetén is okés req.body-t használni?
-    router.patch('/:userId/username', async (req, res) => {
+    router.patch('/:userId/username', validate(usernameSchema), async (req, res) => {
         let userId = req.params.userId
         let newUsername = req.body.newUsername
         let result = await repository.updateUsername(userId, newUsername)
         res.send(result)
     })
 
-    router.patch('/:userId/displayName', async (req, res) => {
+    router.patch('/:userId/displayName', validate(displayNameSchema), async (req, res) => {
         let userId = req.params.userId
         let newDisplayName = req.body.newDisplayName
         let result = await repository.updateDisplayName(userId, newDisplayName)

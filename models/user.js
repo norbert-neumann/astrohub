@@ -12,7 +12,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             const result = await usersCollection.aggregate([
                 {
                     $match: {
-                        _id: new ObjectId(userId)
+                        _id: ObjectId.createFromHexString(userId)
                     }
                 },
                 {
@@ -38,7 +38,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             const result = await usersCollection.aggregate([
                 {
                     $match: {
-                        _id: new ObjectId(userId)
+                        _id: ObjectId.createFromHexString(userId)
                     }
                 },
                 {
@@ -64,7 +64,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             const result = await usersCollection.aggregate([
                 {
                     $match: {
-                        _id: new ObjectId(userId)
+                        _id: ObjectId.createFromHexString(userId)
                     }
                 },
                 {
@@ -90,7 +90,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             const result = await usersCollection.aggregate([
                 {
                     $match: {
-                        _id: new ObjectId(userId)
+                        _id: ObjectId.createFromHexString(userId)
                     }
                 },
                 {
@@ -114,7 +114,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
 
         updateUsername(userId, newUsername) {
             return usersCollection.updateOne(
-                {_id: userId},
+                {_id: ObjectId.createFromHexString(userId)},
                 {$set: {username: newUsername}}
             )
         },

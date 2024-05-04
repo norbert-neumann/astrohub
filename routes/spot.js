@@ -1,6 +1,6 @@
 import express from 'express'
 import validate from '../validator.js'
-import { spotSchema } from '../schema.js'
+import { spotSchema, nameSchema, ratingSchema } from '../schema.js'
 
 function createSpotRouter(repository) {
     const router = express.Router()
@@ -53,12 +53,18 @@ function createSpotRouter(repository) {
         res.send({data: 'POST spot'})
     })
 
-    // TODO: add schema for rating?
-    router.patch('/:spotId/rating', async (req, res) => {
+    router.patch('/:spotId/name', validate(nameSchema), async (req, res) => {
+        const spotId = req.params.spotId
+        const newName = req.body.newName
+        repository.updateName(spotId, newName)
+        res.send({data: 'PATCH spot-name'})
+    })
+    
+    router.patch('/:spotId/rating', validate(ratingSchema), async (req, res) => {
         const spotId = req.params.spotId
         const newRating = req.body.newRating
         repository.updateRating(spotId, newRating)
-        res.send({data: 'PATCH spot'})
+        res.send({data: 'PATCH spot-rating'})
     })
 
     router.delete('/:spotId', async (req, res) => {

@@ -1,6 +1,6 @@
 import express from 'express'
 import validate from '../validator.js'
-import { tripSchema } from '../schema.js'
+import { tripSchema, nameSchema, dateSchema } from '../schema.js'
 
 function createTripRouter(repository) {
     const router = express.Router()
@@ -28,14 +28,14 @@ function createTripRouter(repository) {
         res.send(result)
     })
     
-    router.patch('/:tripId/name', async (req, res) => {
+    router.patch('/:tripId/name', validate(nameSchema), async (req, res) => {
         const tripId = req.params.tripId
         const newName = req.body.newName
         let result = await repository.updateName(tripId, newName)
         res.send(result)
     })
 
-    router.patch('/:tripId/date', async (req, res) => {
+    router.patch('/:tripId/date', validate(dateSchema), async (req, res) => {
         const tripId = req.params.tripId
         const newDate = req.body.newDate
         let result = await repository.updateDate(tripId, newDate)

@@ -78,6 +78,13 @@ export default function createSpotFunctions(spotsCollection) {
             )
         },
 
+        updateName(spotId, newName) {
+            spotsCollection.updateOne(
+                {_id: new ObjectId(spotId)},
+                {$set: {name: newName}}
+            )
+        },
+
         updateRating(spotId, newRating) {
             spotsCollection.updateOne(
                 {_id: new ObjectId(spotId)},
