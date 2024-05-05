@@ -8,6 +8,10 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             )
         },
 
+        getUserByUsername(username) {
+            return usersCollection.findOne({username})
+        },
+
         async getFriends(userId) {
             const result = await usersCollection.aggregate([
                 {
@@ -183,7 +187,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
         },
 
         async saveUser(user) {
-            await usersCollection.insertOne(user)
+            return await usersCollection.insertOne(user, {$project: {_id: 1}})
         },
 
         async deleteUser(userId) {
