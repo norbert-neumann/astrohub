@@ -1,5 +1,7 @@
 import express from 'express'
 import bcrypt from 'bcrypt'
+import googleStrategy from '../google-auth.js'
+import passport from 'passport'
 
 function createAuthRouter(repository) {
     const router = express.Router()
@@ -65,6 +67,22 @@ function createAuthRouter(repository) {
     router.post('/logout', async (req, res, next) => {
         res.clearCookie('userId')
         res.redirect('/auth')
+    })
+
+    router.get('/google', passport.authenticate('google', {scope: ['email', 'profile']}))
+
+    router.get('/google/callback', passport.authenticate('google', {
+        session: false,
+        successRedirect: '/auth',
+        failureRedirect: '/auth/google/failure'
+    }))
+
+    router.get('/google/failure', (req, res) => {
+        res.send('Something went wrong...')
+    })
+
+    router.get('/google/success', (req, res) => {
+        res.send(req.cookies.profile)
     })
 
     return router

@@ -7,10 +7,13 @@ import forecastRouter from './routes/forecast.js'
 import cookieParser from 'cookie-parser'
 import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
+import passport from 'passport'
 
 export function createApp(repository) {
+
     const app = express()
     
+    app.use(passport.initialize())
     app.use(cookieParser())
     app.use(express.static('public'))
     app.use(express.json({limit: '1mb'}))
@@ -19,8 +22,11 @@ export function createApp(repository) {
     app.set('views', join(__dirname, './views'))
     app.set('view engine', 'hjs')
 
+    app.get('/', (req, res) => {
+        res.send('<a href="/auth/google">Authenticate with Google</a>')
+    })
 
-    app.use('/auth', authRouter(repository.users))
+    app.use('/auth', authRouter(repository.users, passport))
     app.use('/users', userRouter(repository.users))
     app.use('/spots', spotRouter(repository.spots))
     app.use('/trips', tripRouter(repository.trips))
