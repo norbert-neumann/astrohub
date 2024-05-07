@@ -11,7 +11,6 @@ passport.use(new GoogleStrategy({
     passReqToCallback: true
 },
     (request, accessToken, refreshToken, profile, done) => {
-        console.log(profile.id)
         request.res.cookie('userId', profile.id)
         return done(null, profile)
     }

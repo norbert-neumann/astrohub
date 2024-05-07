@@ -81,10 +81,6 @@ function createAuthRouter(repository) {
         res.send('Something went wrong...')
     })
 
-    router.get('/google/success', (req, res) => {
-        res.send(req.cookies.profile)
-    })
-
     return router
 }
 
