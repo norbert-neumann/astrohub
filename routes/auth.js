@@ -20,6 +20,7 @@ function createAuthRouter(repository) {
     })
 
     router.post('/register', async (req, res, next) => {
+        console.log(' in register')
         try {
             const {username, displayName, password} = req.body
             const hashedPassword = await bcrypt.hash(password, 10)

@@ -22,10 +22,6 @@ export function createApp(repository) {
     app.set('views', join(__dirname, './views'))
     app.set('view engine', 'hjs')
 
-    app.get('/', (req, res) => {
-        res.send('<a href="/auth/google">Authenticate with Google</a>')
-    })
-
     app.use('/auth', authRouter(repository.users, passport))
     app.use('/users', userRouter(repository.users))
     app.use('/spots', spotRouter(repository.spots))

@@ -5,6 +5,26 @@ import { displayNameSchema, userSchema, usernameSchema } from '../schema.js'
 function createUserRouter(repository) {
     const router = express.Router()
 
+    const extractUserId = (req, res, next) => {
+        const userId = req.cookies.userId
+        if (userId) {
+            req.params.userId = userId
+            next()
+        }
+        else {
+            res.sendStatus(401)
+        }
+    }
+
+    router.use((req, res, next) => {
+        if (req.method !== 'POST' || req.url !== '/') {
+            extractUserId(req, res, next)
+        }
+        else {
+            next()
+        }
+    })
+
     router.get('/:userId', async (req, res) => {
         const user = await repository.getUserById(req.params.userId)
         res.send(user)
@@ -39,7 +59,7 @@ function createUserRouter(repository) {
             friends: [],
             friendRequests: []
         }
-        //repository.saveUser(user)
+        repository.saveUser(user)
         res.send({data: 'POST user'})
     })
 
