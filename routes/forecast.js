@@ -2,7 +2,7 @@ import express from 'express'
 import validate from '../validator.js'
 import { forecastSchema } from '../schema.js'
 import { getStarEphimeres, getWeatherData, stargazingForecast } from '../test.js'
-import { STARS } from '../star-to-index.js'
+import { starToId } from '../star-to-index.js'
 
 function createForecastRouter(repository) {
     const router = express.Router()
@@ -17,22 +17,23 @@ function createForecastRouter(repository) {
     router.get('/', preprocessStars, validate(forecastSchema), async (req, res) => {
         const lattitude = req.body.lattitude
         const longitude = req.body.longitude
-        const stars = req.body.stars.map(star => STARS[star])
+        const starIds = req.body.stars.map(star => starToId[star])
 
-        const ephimeres = await getStarEphimeres(lattitude, longitude, stars)
+        const ephimeres = await getStarEphimeres(lattitude, longitude, starIds)
         const { cloudCover, nights } = await getWeatherData(lattitude, longitude)
 
-        nights.map(async (night) => {
-            console.log(await stargazingForecast({
+        const nightForecasts = nights.map(night => stargazingForecast({
                 start: night[0],
                 end: night[1],
                 ephimeresHistograms: ephimeres,
                 cloudCoverHistogram: cloudCover,
-                starIds: stars
-            }))
-        })
+                starIds: starIds
+            })
+        )
 
-        res.send({data: 'GET forecast'})
+        const forecast = await Promise.all(nightForecasts)
+
+        res.send(forecast.filter(night => night.cloudCoverPct < 30.0))
     })
 
     return router

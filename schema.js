@@ -1,4 +1,4 @@
-import { STARS } from "./star-to-index.js"
+import { starToId } from "./star-to-index.js"
 
 export const nameSchema = {
     $schema: "http://json-schema.org/draft-07/schema#",
@@ -142,7 +142,7 @@ export const forecastSchema = {
             type: 'array',
             items: {
                 type: 'string',
-                enum: Object.keys(STARS)
+                enum: Object.keys(starToId)
             }
         }
     },

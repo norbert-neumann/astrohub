@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom'
-import { indexToStar } from './star-to-index.js'
+import { idToStar } from './star-to-index.js'
 
 const visualCrossingApiKey = 'X6XEVSJRDWZV4D9V2VWARKL24'
 let visualCrossingEndpoint = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/weatherdata/forecast'
@@ -180,14 +180,14 @@ export async function getStarEphimeres(lattitude, longitude, stars) {
         params.set('lon', longitude)
         params.set('date', currentDate)
 
-        const promises = stars.map(objectId => {
+        const ephimeresRequests = stars.map(objectId => {
             params.set('body', objectId)
             const url = usnoEndpoint + params.toString()
             return fetch(url)
         });
 
-        const usnoResponses = await Promise.all(promises)
-        const htmls = await Promise.all(usnoResponses.map(r => r.text()))
+        const responses = await Promise.all(ephimeresRequests)
+        const htmls = await Promise.all(responses.map(r => r.text()))
         const data = htmls.map(html => new JSDOM(html).window.document.querySelector('pre').textContent)
         const allIntervals = data.map(rawText => convertEphimeresToIntervals(rawText))
 
@@ -216,54 +216,6 @@ export async function getWeatherData(lattitude, longitude) {
 
         resolve({cloudCover: weatherHistogram, nights: nightIntervals})
     })
-}
-
-export function stargazingForecastThreshold(
-    {
-        start,
-        end,
-        ephimeresHistograms,
-        cloudCoverHistogram,
-        starIds,
-        cloudCoverThreshold=30
-    }) {
-    const currentDate = new Date()
-    const baseDate = currentDate.setUTCHours(0, 0, 0, 0)
-
-    let night = {
-        sunset: offsetDateByMinutes(baseDate, start),
-        sunrise: offsetDateByMinutes(baseDate, end),
-        stars: []
-    }
-
-    const relevantCloudCoverHistogram = cloudCoverHistogram.slice(start, end)
-    const avgCloudCover = relevantCloudCoverHistogram.reduce((acc, curr) => acc + curr) / relevantCloudCoverHistogram.length
-    
-    night.cloudCover = avgCloudCover
-
-    ephimeresHistograms.forEach((ephimeres, index) => {
-        const visibilityHistogram = computeVisibility(
-            ephimeres.slice(start, end),
-            relevantCloudCoverHistogram,
-            cloudCoverThreshold
-        )
-
-        const startOfVisibility = startOf(visibilityHistogram)
-        const endOfVisibility = endOf(visibilityHistogram)
-
-        if (startOfVisibility) {
-            let star = {
-                name: indexToStar[starIds[index]],
-                rise: offsetDateByMinutes(baseDate, startOfVisibility + start)
-            }
-
-            if (endOfVisibility) star.set = offsetDateByMinutes(baseDate, endOfVisibility + start)
-
-            night.stars.push(star)
-        }
-    })
-
-    return night
 }
 
 export function stargazingForecast(
@@ -295,7 +247,7 @@ export function stargazingForecast(
 
         if (startOfVisibility) {
             let star = {
-                name: indexToStar[starIds[index]],
+                name: idToStar[starIds[index]],
                 rise: offsetDateByMinutes(baseDate, startOfVisibility + start)
             }
 

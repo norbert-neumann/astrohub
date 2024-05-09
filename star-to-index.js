@@ -1,4 +1,4 @@
-const STARS = {
+const starToId = {
     MERCURY: 1,
     VENUS: 2,
     MARS: 4,
@@ -32,7 +32,7 @@ const STARS = {
     VEGA: -22
 };
 
-const indexToStar = {
+const idToStar = {
     '1': 'Mercury',
     '2': 'Venus',
     '4': 'Mars',
@@ -66,4 +66,4 @@ const indexToStar = {
     '-22': 'Vega'
 }
 
-export {STARS, indexToStar}
+export {starToId, idToStar}
