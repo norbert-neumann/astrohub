@@ -176,7 +176,7 @@ function dateToRange(baseDate, date) {
     return Math.floor((date - baseDate) / (1000 * 60))
 }
 
-export function rateInterval(baseDate, start, end, ephimeresHistograms, weatherHistogram) {
+export function rateInterval(start, end, ephimeresHistograms, weatherHistogram) {
     let maxEphimeresScores = Array(ephimeresHistograms.length).fill(0)
 
     for (let i = start; i <= end; i++) {
@@ -192,7 +192,7 @@ export function rateInterval(baseDate, start, end, ephimeresHistograms, weatherH
     return maxEphimeresScores.reduce((acc, curr) => acc + curr)
 }
 
-export async function getEphimeres(lattitude, longitude, objects, baseDate) {
+export async function getEphimeres(lattitude, longitude, stars) {
     return new Promise(async (resolve, reject) => {
         const currentDate = new Date().toISOString().split('T')[0]
 
@@ -201,7 +201,7 @@ export async function getEphimeres(lattitude, longitude, objects, baseDate) {
         params.set('lon', longitude)
         params.set('date', currentDate)
 
-        const promises = objects.split(',').map(objectId => {
+        const promises = stars.map(objectId => {
             params.set('body', objectId)
             const url = usnoEndpoint + params.toString()
             return fetch(url)
@@ -217,10 +217,12 @@ export async function getEphimeres(lattitude, longitude, objects, baseDate) {
     })
 }
 
-export async function getWeather(baseDate, lattitude, longitude) {
+export async function getWeather(lattitude, longitude) {
     return new Promise(async (resolve, reject) => {
     
         const location = [lattitude, longitude].join(',')
+        const currentDate = new Date()
+        const baseDate = currentDate.setUTCHours(0, 0, 0, 0)
 
         let params =  new URLSearchParams(visualCrossingParams)
         params.set('locations', location)

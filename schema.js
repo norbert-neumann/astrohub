@@ -1,3 +1,5 @@
+import STARS from "./star-to-index.js"
+
 export const nameSchema = {
     $schema: "http://json-schema.org/draft-07/schema#",
     type: 'object',
@@ -117,5 +119,33 @@ export const displayNameSchema = {
         }
     },
     required: ['newDisplayName'],
+    additionalProperties: true
+}
+
+export const forecastSchema = {
+    $schema: "http://json-schema.org/draft-07/schema#",
+    type : 'object',
+    properties: {
+        lattitude: {
+            type: 'number',
+            minimum: -90.0,
+            maximum: 90.0
+        },
+
+        longitude: {
+            type: 'number',
+            minimum: -180.0,
+            maximum: 180.0
+        },
+
+        stars: {
+            type: 'array',
+            items: {
+                type: 'string',
+                enum: Object.keys(STARS)
+            }
+        }
+    },
+    required: ['lattitude', 'longitude', 'stars'],
     additionalProperties: true
 }
