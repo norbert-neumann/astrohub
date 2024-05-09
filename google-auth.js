@@ -11,6 +11,17 @@ passport.use(new GoogleStrategy({
     passReqToCallback: true
 },
     (request, accessToken, refreshToken, profile, done) => {
+
+        const user = {
+            _id: profile.id,
+            username: profile.email,
+            displayName: profile.displayName,
+            favouriteSpots: [],
+            trips: [],
+            friends: [],
+            friendRequests: []
+        }
+
         request.res.cookie('userId', profile.id)
         return done(null, profile)
     }

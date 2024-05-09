@@ -1,11 +1,42 @@
 import express from 'express'
 import bcrypt from 'bcrypt'
-import googleStrategy from '../google-auth.js'
 import passport from 'passport'
+import { Strategy as GoogleStrategy } from 'passport-google-oauth2'
+
+const GOOGLE_CLIENT_ID = '197387661875-k862cf23lkefonm2ntfj16i1k3teb6vu.apps.googleusercontent.com'
+const GOOGLE_CLIENT_SECRET = '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'
 
 function createAuthRouter(repository) {
     const router = express.Router()
     
+    passport.use(new GoogleStrategy({
+        clientID: GOOGLE_CLIENT_ID,
+        clientSecret: GOOGLE_CLIENT_SECRET,
+        callbackURL: 'http://localhost:3000/auth/google/callback',
+        passReqToCallback: true
+    },
+        async (request, accessToken, refreshToken, profile, done) => {
+    
+            const user = {
+                _id: profile.id,
+                username: profile.email,
+                displayName: profile.displayName,
+                favouriteSpots: [],
+                trips: [],
+                friends: [],
+                friendRequests: []
+            }
+
+            await repository.getOrCreate(user)
+    
+            request.res.cookie('userId', profile.id)
+            return done(null, profile)
+        }
+    ))
+    
+    passport.serializeUser((user, done) => done(null, user))
+    passport.deserializeUser((user, done) => done(null, user))
+
     router.get('/', async (req, res, next) => {
         if (req.cookies.userId) {
             res.render('home', {user: req.cookies.userId})

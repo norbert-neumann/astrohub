@@ -12,6 +12,22 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             return usersCollection.findOne({username})
         },
 
+        // TODO: convert user._id to ObjectId
+        async getOrCreate(user) {
+            const options = {
+                upsert: true,
+                returnOriginal: false
+            }
+
+            const result = await usersCollection.findOneAndUpdate(
+                {_id: user._id},
+                {$setOnInsert: user},
+                options
+            )
+
+            return result?.value || user
+        },
+
         async getFriends(userId) {
             const result = await usersCollection.aggregate([
                 {
