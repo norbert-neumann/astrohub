@@ -1,7 +1,7 @@
 import express from 'express'
 import validate from '../validator.js'
 import { forecastSchema } from '../schema.js'
-import { getStarEphimeres, getWeatherData, stargazingForecast } from '../test.js'
+import { getStarEphimeres, getWeatherData, stargazingForecast, convertDatesToTimeZone } from '../test.js'
 import { starToId } from '../star-to-index.js'
 
 function createForecastRouter(repository) {
@@ -18,6 +18,8 @@ function createForecastRouter(repository) {
         const lattitude = req.body.lattitude
         const longitude = req.body.longitude
         const starIds = req.body.stars.map(star => starToId[star])
+        const timeZone = req.body.timeZone || 'UTC'
+        const threshold = req.body.threshold || 30.0
 
         const ephimeres = await getStarEphimeres(lattitude, longitude, starIds)
         const { cloudCover, nights } = await getWeatherData(lattitude, longitude)
@@ -31,9 +33,13 @@ function createForecastRouter(repository) {
             })
         )
 
-        const forecast = await Promise.all(nightForecasts)
+        let forecast = await Promise.all(nightForecasts)
+        
+        if (timeZone !== 'UTC') {
+            forecast = convertDatesToTimeZone(forecast, timeZone)
+        }
 
-        res.send(forecast.filter(night => night.cloudCoverPct < 30.0))
+        res.send(forecast.filter(night => night.cloudCoverPct < threshold))
     })
 
     return router

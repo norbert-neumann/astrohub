@@ -144,6 +144,17 @@ export const forecastSchema = {
                 type: 'string',
                 enum: Object.keys(starToId)
             }
+        },
+
+        timeZone: {
+            type: 'string',
+            enum: Intl.supportedValuesOf('timeZone')
+        },
+
+        threshold : {
+            type: 'number',
+            minimum: 0.0,
+            maximum: 100.0
         }
     },
     required: ['lattitude', 'longitude', 'stars'],
