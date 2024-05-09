@@ -26,10 +26,44 @@ const STARS = {
     PROCYON: -16,
     REGULUS: -17,
     RIGEL: -18,
-    "RIGIL KENT.": -19,
+    'RIGIL KENT.': -19,
     SIRIUS: -20,
     SPICA: -21,
     VEGA: -22
 };
 
-export default STARS
+const indexToStar = {
+    '1': 'Mercury',
+    '2': 'Venus',
+    '4': 'Mars',
+    '5': 'Jupiter',
+    '6': 'Saturn',
+    '7': 'Uranus',
+    '8': 'Neptune',
+    '9': 'Pluto',
+    '11': 'Moon',
+    '-1': 'Achernar',
+    '-2': 'Adhara',
+    '-3': 'Aldebaran',
+    '-4': 'Altair',
+    '-5': 'Antares',
+    '-6': 'Arcturus',
+    '-7': 'Betelgeuse',
+    '-8': 'Canopus',
+    '-9': 'Capella',
+    '-10': 'Deneb',
+    '-11': 'Fomalhaut',
+    '-12': 'Hadar',
+    '-13': 'Mimosa',
+    '-14': 'Polaris',
+    '-15': 'Pollux',
+    '-16': 'Procyon',
+    '-17': 'Regulus',
+    '-18': 'Rigel',
+    '-19': 'Rigil Kent.',
+    '-20': 'Sirius',
+    '-21': 'Spica',
+    '-22': 'Vega'
+}
+
+export {STARS, indexToStar}

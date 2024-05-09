@@ -1,4 +1,5 @@
-import { JSDOM } from 'jsdom';
+import { JSDOM } from 'jsdom'
+import { indexToStar } from './star-to-index.js'
 
 const visualCrossingApiKey = 'X6XEVSJRDWZV4D9V2VWARKL24'
 let visualCrossingEndpoint = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/weatherdata/forecast'
@@ -26,13 +27,11 @@ const usnoParams = {
     submit: 'Get+Data'
 }
 
-async function getHtml() {
-    const response = await fetch('https://aa.usno.navy.mil/calculated/mrst?body=10&date=2024-03-26&reps=15&lat=0.0000&lon=0.0000&label=&tz=0.00&tz_sign=-1&height=0&submit=Get+Data')
-    const html = await response.text()
-    
-    const dom = new JSDOM(html)
-    return dom.window.document.querySelector('pre').textContent
+function convertToMinutes(day, timeString) {
+    const [hours, minutes] = timeString.split(':')
+    return day * 1440 + Number(hours) * 60 + Number(minutes)
 }
+
 
 export function convertEphimeresToIntervals(rawText) {
     const lines = rawText.split('\n')
@@ -70,16 +69,6 @@ export function addIntervalToHistogram(histrogram, interval) {
     return newHistrogram
 }
 
-export function maskOutHistogram(start, end, histrogram) {
-    let newHistrogram = [...histrogram]
-    
-    for (let i = start; i <= end; i++) {
-        newHistrogram[i] = 0
-    }
-
-    return newHistrogram
-}
-
 export function getNightIntervals(baseDate, values) {
     let riseSetTimes = []
 
@@ -90,54 +79,10 @@ export function getNightIntervals(baseDate, values) {
 
     let nightInvervals = []
     for (let i = 1; i < riseSetTimes.length - 1; i+=2) {
-        nightInvervals.push([dateToRange(baseDate, riseSetTimes[i]), dateToRange(baseDate, riseSetTimes[i + 1])])   
+        nightInvervals.push([minutesBetweenDates(baseDate, riseSetTimes[i]), minutesBetweenDates(baseDate, riseSetTimes[i + 1])])   
     }
 
     return nightInvervals
-}
-
-function convertSunEphimeresToIntervals(rawText) {
-    const lines = rawText.split('\n')
-    const riseSetTable = lines.slice(17, lines.length - 3)
-
-    let intervals = []
-    let rise, set
-
-    for (let day = 0; day < riseSetTable.length - 1; day++) {
-        const row = riseSetTable[day];
-        const nextRow = riseSetTable[day + 1]
-        set = row.substring(71, 76)
-        rise = nextRow.substring(20, 25)
-
-        if (rise.trim()) {
-            let setInMinutes = convertToMinutes(day, set)
-            let riseInMinutes = convertToMinutes(day + 1, rise)
-
-            intervals.push([setInMinutes, riseInMinutes])
-        }
-    }
-
-    return intervals
-}
-
-function convertToMinutes(day, timeString) {
-    const [hours, minutes] = timeString.split(':')
-    return day * 1440 + Number(hours) * 60 + Number(minutes)
-}
-
-function countIntervalIntersections(nightInterval, objectInterval) {
-    let intersectionCounts = []
-
-    for (let i = 0; i < nightInterval.length; i++) {
-       const night = nightInterval[i]
-       const count = objectInterval.filter(interval => 
-            (interval[0] > night[0] && interval[0] < night[1]) ||
-            (interval[1] > night[0] && interval[1] < night[1])
-       ).length
-       intersectionCounts.push(count)
-    }
-
-    return intersectionCounts
 }
 
 export function getEphimeresHistogram(intervals) {
@@ -152,28 +97,62 @@ export function getEphimeresHistogram(intervals) {
     return histrogram
 }
 
-export function getWeatherHistogram(baseDate, clearSkyDateStrings) {
+export function getWeatherHistogram(baseDate, hourlyForecast) {
     let histrogram = Array(27360).fill(0)
 
-    for (const dateString of clearSkyDateStrings) {
-        const startDate = new Date(dateString)
+    hourlyForecast.forEach(forecast => {
+        const startDate = new Date(forecast.datetimeStr)
         const endDate = new Date(startDate)
         endDate.setHours(startDate.getHours() + 1);
 
-        const startInterval = dateToRange(baseDate, startDate)
-        const endInterval = dateToRange(baseDate, endDate)
+        const startDateInMinutes = minutesBetweenDates(baseDate, startDate)
+        const endDateInMinutes = minutesBetweenDates(baseDate, endDate)
 
-        for (let i = startInterval; i <= endInterval; i++) {
-            histrogram[i] = 1
+        for (let i = startDateInMinutes; i <= endDateInMinutes; i++) {
+            histrogram[i] = forecast.cloudcover
         }
-    }
-
+    })
 
     return histrogram
 }
 
-function dateToRange(baseDate, date) {
+function minutesBetweenDates(baseDate, date) {
     return Math.floor((date - baseDate) / (1000 * 60))
+}
+
+function offsetDateByMinutes(baseDate, range) {
+    return new Date(range * 60 * 1000 + baseDate)
+}
+
+function computeVisibility(ephimeres, cloudcover, cloudCoverThreshold) {
+    let visibilityHistogram = Array(ephimeres.length).fill(1)
+
+    for (let i = 0; i < ephimeres.length; i++) {
+        if (cloudcover[i] < cloudCoverThreshold) {
+            visibilityHistogram[i] = ephimeres[i]
+        }
+    }
+
+    return visibilityHistogram
+}
+
+function startOf(histogram) {
+    for (let i = 0; i < histogram.length; i++) {
+        if (histogram[i] > 0) {
+            return i
+        }
+    }
+
+    return undefined
+}
+
+function endOf(histogram) {
+    for (let i = histogram.length - 1; i >= 0; i--) {
+        if (histogram[i] > 0) {
+            return i
+        }
+    }
+    return undefined
 }
 
 export function rateInterval(start, end, ephimeresHistograms, weatherHistogram) {
@@ -192,7 +171,7 @@ export function rateInterval(start, end, ephimeresHistograms, weatherHistogram) 
     return maxEphimeresScores.reduce((acc, curr) => acc + curr)
 }
 
-export async function getEphimeres(lattitude, longitude, stars) {
+export async function getStarEphimeres(lattitude, longitude, stars) {
     return new Promise(async (resolve, reject) => {
         const currentDate = new Date().toISOString().split('T')[0]
 
@@ -217,7 +196,7 @@ export async function getEphimeres(lattitude, longitude, stars) {
     })
 }
 
-export async function getWeather(lattitude, longitude) {
+export async function getWeatherData(lattitude, longitude) {
     return new Promise(async (resolve, reject) => {
     
         const location = [lattitude, longitude].join(',')
@@ -230,11 +209,101 @@ export async function getWeather(lattitude, longitude) {
 
         let weatherResponse = await fetch(url)
         let weatherData = await weatherResponse.json()
+        let hourlyForecast = weatherData.locations[location].values
 
-        let clearSkyDateStrings = weatherData.locations[location].values.filter(value => value.cloudcover < 30.0).map(value => value.datetimeStr)
-        let weatherHistogram = getWeatherHistogram(baseDate, clearSkyDateStrings)
-        let nightIntervals = getNightIntervals(baseDate, weatherData.locations[location].values)
+        let weatherHistogram = getWeatherHistogram(baseDate, hourlyForecast)
+        let nightIntervals = getNightIntervals(baseDate, hourlyForecast)
 
-        resolve({histogram: weatherHistogram, nights: nightIntervals})
+        resolve({cloudCover: weatherHistogram, nights: nightIntervals})
     })
+}
+
+export function stargazingForecastThreshold(
+    {
+        start,
+        end,
+        ephimeresHistograms,
+        cloudCoverHistogram,
+        starIds,
+        cloudCoverThreshold=30
+    }) {
+    const currentDate = new Date()
+    const baseDate = currentDate.setUTCHours(0, 0, 0, 0)
+
+    let night = {
+        sunset: offsetDateByMinutes(baseDate, start),
+        sunrise: offsetDateByMinutes(baseDate, end),
+        stars: []
+    }
+
+    const relevantCloudCoverHistogram = cloudCoverHistogram.slice(start, end)
+    const avgCloudCover = relevantCloudCoverHistogram.reduce((acc, curr) => acc + curr) / relevantCloudCoverHistogram.length
+    
+    night.cloudCover = avgCloudCover
+
+    ephimeresHistograms.forEach((ephimeres, index) => {
+        const visibilityHistogram = computeVisibility(
+            ephimeres.slice(start, end),
+            relevantCloudCoverHistogram,
+            cloudCoverThreshold
+        )
+
+        const startOfVisibility = startOf(visibilityHistogram)
+        const endOfVisibility = endOf(visibilityHistogram)
+
+        if (startOfVisibility) {
+            let star = {
+                name: indexToStar[starIds[index]],
+                rise: offsetDateByMinutes(baseDate, startOfVisibility + start)
+            }
+
+            if (endOfVisibility) star.set = offsetDateByMinutes(baseDate, endOfVisibility + start)
+
+            night.stars.push(star)
+        }
+    })
+
+    return night
+}
+
+export function stargazingForecast(
+    {
+        start,
+        end,
+        ephimeresHistograms,
+        cloudCoverHistogram,
+        starIds
+    }) {
+    const currentDate = new Date()
+    const baseDate = currentDate.setUTCHours(0, 0, 0, 0)
+
+    let forecast = {
+        sunset: offsetDateByMinutes(baseDate, start),
+        sunrise: offsetDateByMinutes(baseDate, end),
+        stars: []
+    }
+
+    const relevantCloudCoverHistogram = cloudCoverHistogram.slice(start, end)
+    const avgCloudCover = relevantCloudCoverHistogram.reduce((acc, curr) => acc + curr) / relevantCloudCoverHistogram.length
+    
+    forecast.cloudCoverPct = avgCloudCover.toFixed(2)
+
+    ephimeresHistograms.forEach((ephimeres, index) => {
+        const relevantEphimeresHistogram = ephimeres.slice(start, end)
+        const startOfVisibility = startOf(relevantEphimeresHistogram)
+        const endOfVisibility = endOf(relevantEphimeresHistogram)
+
+        if (startOfVisibility) {
+            let star = {
+                name: indexToStar[starIds[index]],
+                rise: offsetDateByMinutes(baseDate, startOfVisibility + start)
+            }
+
+            if (endOfVisibility) star.set = offsetDateByMinutes(baseDate, endOfVisibility + start)
+
+            forecast.stars.push(star)
+        }
+    })
+
+    return forecast
 }
