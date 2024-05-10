@@ -29,7 +29,7 @@ export default function getForecastController() {
         let forecast = await Promise.all(nightForecasts)
         
         if (timeZone !== 'UTC') {
-            forecast = dateService.convertDatesToTimeZone(forecast, timeZone)
+            forecast = dateService.setForecastToTimeZone(forecast, timeZone)
         }
     
         res.send(forecast.filter(night => night.cloudCoverPct < threshold))

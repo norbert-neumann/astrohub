@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
 const dateService = {
-    convertDatesToTimeZone: (forecast, timeZone) => {
+    setForecastToTimeZone: (forecast, timeZone) => {
         const convertedForecast = _.cloneDeep(forecast)
     
         const formatter = new Intl.DateTimeFormat('en-US', {

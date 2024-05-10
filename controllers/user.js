@@ -1,6 +1,8 @@
+import dateService from '../services/dateService.js'
+
 function createUserController(repository) {
+
     const getUser = async (req, res) => {
-        console.log('params: ' + req.params.userId)
         const user = await repository.getUserById(req.params.userId)
         res.send(user)
     }
@@ -21,8 +23,9 @@ function createUserController(repository) {
     }
 
     const getTrips = async (req, res) => {
-        const user = await repository.getTrips(req.params.userId)
-        res.send(user)
+        const timezone = req.body.timezone
+        const result = await repository.getTrips(req.params.userId, timezone)
+        res.send(result)
     }
 
     const addFriend = async (req, res) => {

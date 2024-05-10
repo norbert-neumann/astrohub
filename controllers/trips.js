@@ -1,13 +1,16 @@
 function createTripController(repository) {
+
     const getUpcomingTrips = async (req, res) => {
         const origin = req.body.origin
         const maxDistance = req.body.distance || undefined
-        const result = await repository.getUpcomingTrips(origin, maxDistance)
+        const timezone = req.body.timezone || undefined
+        const result = await repository.getUpcomingTrips(origin, maxDistance, timezone)
         res.send(result)
     }
 
     const getTripById = async (req, res) => {
-        const trip = await repository.getTripById(req.params.tripId)
+        const timezone = req.body.timezone || undefined
+        const trip = await repository.getTripById(req.params.tripId, timezone)
         res.send(trip)
     }
 

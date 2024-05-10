@@ -6,7 +6,7 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
             return tripsCollection.find().toArray()
         },
 
-        async getUpcomingTrips(origin, distanceInKm=50.0) {
+        async getUpcomingTrips(origin, distanceInKm=50.0, timezone='UTC') {
             const geoOrigin = {
                 type: "Point",
                 coordinates: [origin.longitude, origin.lattitude]
@@ -23,16 +23,16 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
             const upcomingTrips = await tripsCollection.aggregate([
                 {
                     $lookup: {
-                        from: "spots",
-                        localField: "spotId",
-                        foreignField: "_id",
-                        as: "spots"
+                        from: 'spots',
+                        localField: 'spotId',
+                        foreignField: '_id',
+                        as: 'spots'
                     }
                 },
                 {
                     $match: {
                       $and: [
-                        { "spots": { $in: spotsWithinDistance } },
+                        { 'spots': { $in: spotsWithinDistance } },
                         { date: { $gt: new Date() } }
                       ]
                     }
@@ -43,8 +43,8 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
                 {
                     $project: {
                         _id: 1,
-                        date: 1,
-                        spot: "$spots"
+                        date: { $dateToString: { date: '$date', timezone } },
+                        spot: '$spots'
                     }
                 }
             ]).sort({date: 1}).toArray()
@@ -52,8 +52,18 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
             return upcomingTrips
         },
 
-        getTripById(tripId) {
-            return tripsCollection.findOne({_id: ObjectId.createFromHexString(tripId)})
+        getTripById(tripId, timezone='UTC') {
+            return tripsCollection.findOne(
+                {_id: ObjectId.createFromHexString(tripId)},
+                {
+                    projection: {
+                    _id: 1,
+                    spotId: 1,
+                    date: { $dateToString: { date: '$date', timezone } },
+                    name: 1
+                 }
+                }
+            );
         },
 
         updateName(tripId, newName) {

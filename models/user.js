@@ -107,7 +107,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             return result[0]
         },
 
-        async getTrips(userId) {
+        async getTrips_(userId) {
             const result = await usersCollection.aggregate([
                 {
                     $match: {
@@ -133,6 +133,70 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             return result[0]
         },
 
+        async getTrips(userId, timezone='UTC') {
+            // Match user by userId
+            const matchStage = {
+                $match: { _id: ObjectId.createFromHexString(userId) }
+            };
+        
+            // Lookup trips associated with the user
+            const lookupStage = {
+                $lookup: {
+                    from: "trips",
+                    localField: "trips",
+                    foreignField: "_id",
+                    as: "trips"
+                }
+            };
+        
+            // Project only 'trips' field and exclude '_id'
+            const projectStage1 = {
+                $project: { _id: 0, trips: 1 }
+            };
+        
+            // Convert dates in 'trips' to the desired timezone
+            const convertTimezoneStage = {
+                $addFields: {
+                    trips: {
+                        $map: {
+                            input: "$trips",
+                            as: "trip",
+                            in: {
+                                $mergeObjects: [
+                                    "$$trip",
+                                    {
+                                        date: {
+                                            $dateToString: {
+                                                date: "$$trip.date",
+                                                timezone
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            };
+        
+            // Final project to exclude all fields except 'trips'
+            const projectStage2 = {
+                $project: { trips: 1 }
+            };
+        
+            // Execute aggregation pipeline
+            const result = await usersCollection.aggregate([
+                matchStage,
+                lookupStage,
+                projectStage1,
+                convertTimezoneStage,
+                projectStage2
+            ]).toArray();
+        
+            return result[0];
+        },
+        
+        
         updateUsername(userId, newUsername) {
             return usersCollection.updateOne(
                 {_id: ObjectId.createFromHexString(userId)},
