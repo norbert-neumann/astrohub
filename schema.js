@@ -83,7 +83,7 @@ export const tripSchema = {
     additionalProperties: true
 }
 
-export const userSchema = {
+export const registerUserSchema = {
     $schema: "http://json-schema.org/draft-07/schema#",
     type: 'object',
     properties: {
@@ -92,9 +92,15 @@ export const userSchema = {
         },
         displayName: {
             ...nameSchema.properties.name
+        },
+        password: {
+            type: 'string',
+            minLength: 6,
+            maxLength: 20,
+            pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]+$"
         }
     },
-    required: ['username', 'displayName'],
+    required: ['username', 'displayName', 'password'],
     additionalProperties: true,
 }
 

@@ -1,5 +1,7 @@
 import express from 'express'
 import passport from 'passport'
+import validate from '../validator.js'
+import { registerUserSchema } from '../schema.js'
 import createAuthController from '../controllers/auth.js'
 
 function createAuthRouter(repository) {
@@ -13,11 +15,19 @@ function createAuthRouter(repository) {
     router.get('/', controller.renderHomeOrLogin)
     router.get('/register', controller.renderRegisterForm)
 
-    router.get('/google', passport.authenticate('google', {scope: ['email', 'profile']}))
-    router.get('/google/callback', passport.authenticate('google', { session: false, successRedirect: '/auth', failureRedirect: '/auth/google/failure' }))
+    router.get('/google', passport.authenticate('google', {
+        scope: ['email', 'profile']
+    }))
+
+    router.get('/google/callback', passport.authenticate('google', {
+        session: false,
+        successRedirect: '/auth',
+        failureRedirect: '/auth/google/failure'
+    }))
+    
     router.get('/google/failure', controller.renderGoogleFailure)
 
-    router.post('/register', controller.registerUser)
+    router.post('/register', validate(registerUserSchema), controller.registerUser)
     router.post('/login', controller.loginUser)
     router.post('/logout', controller.logoutUser)
 

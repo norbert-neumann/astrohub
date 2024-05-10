@@ -1,5 +1,6 @@
 function createUserController(repository) {
     const getUser = async (req, res) => {
+        console.log('params: ' + req.params.userId)
         const user = await repository.getUserById(req.params.userId)
         res.send(user)
     }
@@ -22,19 +23,6 @@ function createUserController(repository) {
     const getTrips = async (req, res) => {
         const user = await repository.getTrips(req.params.userId)
         res.send(user)
-    }
-
-    const createUser = async (req, res) => {
-        const user = {
-            username: req.body.username,
-            displayName: req.body.displayName,
-            favouriteSpots: [],
-            trips: [],
-            friends: [],
-            friendRequests: []
-        }
-        repository.saveUser(user)
-        res.send({data: 'POST user'})
     }
 
     const addFriend = async (req, res) => {
@@ -118,7 +106,6 @@ function createUserController(repository) {
         getFriendRequests,
         getFavouriteSpots,
         getTrips,
-        createUser,
         addFriend,
         addTrip,
         addFavouriteSpot,
