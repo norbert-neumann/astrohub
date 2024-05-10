@@ -3,7 +3,6 @@ import { ObjectId } from "mongodb"
 export default function createSpotFunctions(spotsCollection) {
     return {
 
-         // TODO: pagination, sort by distance and/or rating
          getAllSpots({filter={}, sort={}, skip=0, limit=0}) {
             return spotsCollection.find(filter)
                 .sort(sort)
@@ -39,7 +38,7 @@ export default function createSpotFunctions(spotsCollection) {
             return this.getAllSpots({filter, sort})
         },
 
-        getSpotsSortedByDistanceIncludeDistance(origin, maxDistanceInKm) {
+        getSpotsSortedByDistanceIncludeDistance(origin, maxDistanceInKm=30.0) {
             return spotsCollection.aggregate([
                 {
                     $geoNear: {

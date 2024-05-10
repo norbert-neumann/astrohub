@@ -1,76 +1,24 @@
 import express from 'express'
 import validate from '../validator.js'
 import { spotSchema, nameSchema, ratingSchema } from '../schema.js'
+import createSpotController from '../controllers/spot.js'
 
 function createSpotRouter(repository) {
     const router = express.Router()
+    const controller = createSpotController(repository)
 
-    router.get('/distance', async (req, res) => {
-        const origin = req.body.origin
-        const distanceInKm = req.body.distance || undefined
-        const result = await repository.getSpotsSortedByDistanceIncludeDistance(origin, distanceInKm)
-        res.send(result)
-    })
+    router.get('/distance', controller.getSpotsSortedByDistance)
+    router.get('/rating', controller.getAllSpotsSortedByRating)
+    router.get('/match-name/:name', controller.getSpotsByPartialName)
+    router.get('/:spotId', controller.getSpotById)
+    router.get('/', controller.getSpotsWithinDistance)
 
-    router.get('/rating', async (req, res) => {
-        const skip = req.body.skip || undefined
-        const limit = req.body.limit || undefined
-        
-        const direction = req.body.orderBy === 'asc' ? 1 : -1
-        const sort = {rating: direction}
-        
-        const spots = await repository.getAllSpots({sort, skip, limit})
-        res.send(spots)
-    }),
+    router.post('/', validate(spotSchema), controller.createSpot)
 
-    router.get('/match-name/:name', async (req, res) => {
-        const spots = await repository.getSpotsByPartialName(req.params.name)
-        res.send(spots)
-    })
+    router.patch('/:spotId/name', validate(nameSchema), controller.updateName)
+    router.patch('/:spotId/rating', validate(ratingSchema), controller.updateRating)
 
-    router.get('/:spotId', async (req, res) => {
-        const spot = await repository.getSpotById(req.params.spotId)
-        res.send(spot)
-    })
-
-    router.get('/', async (req, res) => {
-        const origin = req.body.origin
-        const distanceInKm = req.body.distance || undefined
-        console.log(origin, distanceInKm)
-        const spots = await repository.getSpotsWithinDistance(origin, distanceInKm)
-        res.send(spots)
-    })
-
-    router.post('/', validate(spotSchema), async (req, res) => {
-        console.log(req.body)
-        const spot = {
-            location: [req.body.lattitude, req.body.longitude],
-            name: req.body.name,
-            rating: 0,
-            lightPollution: req.body.lightPollution || undefined
-        }
-        repository.saveSpot(spot)
-        res.send({data: 'POST spot'})
-    })
-
-    router.patch('/:spotId/name', validate(nameSchema), async (req, res) => {
-        const spotId = req.params.spotId
-        const newName = req.body.newName
-        repository.updateName(spotId, newName)
-        res.send({data: 'PATCH spot-name'})
-    })
-    
-    router.patch('/:spotId/rating', validate(ratingSchema), async (req, res) => {
-        const spotId = req.params.spotId
-        const newRating = req.body.newRating
-        repository.updateRating(spotId, newRating)
-        res.send({data: 'PATCH spot-rating'})
-    })
-
-    router.delete('/:spotId', async (req, res) => {
-        const result = await repository.deleteSpot(req.params.spotId)
-        res.send(result)
-    })
+    router.delete('/:spotId', controller.deleteSpot)
 
     return router
 }
