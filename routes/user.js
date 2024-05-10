@@ -1,27 +1,19 @@
 import express from 'express'
 import validate from '../validator.js'
-import { displayNameSchema, userSchema, usernameSchema } from '../schema.js'
+import { displayNameSchema, usernameSchema } from '../schema.js'
 import createUserController from '../controllers/user.js'
 
 function createUserRouter(repository) {
     const router = express.Router()
     const controller = createUserController(repository)
 
-    const extractUserId = (req, res, next) => {
-        const userId = req.cookies.userId
-        if (userId) {
-            req.params.userId = userId
+    router.use((req, res, next) => {
+        const paramUserId = req.url.split('/')[1]
+        const cookieUserId = req.cookies.userId
+        if (cookieUserId && cookieUserId === paramUserId) {
             next()
         } else {
             res.sendStatus(401)
-        }
-    }
-
-    router.use((req, res, next) => {
-        if (req.method !== 'POST' || req.url !== '/') {
-            extractUserId(req, res, next)
-        } else {
-            next()
         }
     })
 
@@ -31,7 +23,6 @@ function createUserRouter(repository) {
     router.get('/:userId/favourite-spots', controller.getFavouriteSpots)
     router.get('/:userId/trips', controller.getTrips)
 
-    router.post('/', validate(userSchema), controller.createUser)
     router.post('/:userId/friends', controller.addFriend)
     router.post('/:userId/trips', controller.addTrip)
     router.post('/:userId/favourite-spots', controller.addFavouriteSpot)
