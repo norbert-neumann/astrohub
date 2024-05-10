@@ -1,51 +1,18 @@
 import express from 'express'
 import validate from '../validator.js'
 import { tripSchema, nameSchema, dateSchema } from '../schema.js'
+import createTripController from '../controllers/trips.js'
 
 function createTripRouter(repository) {
     const router = express.Router()
+    const controller = createTripController(repository)
 
-    // maxDate, maxDistance
-    router.get('/upcoming', async (req, res) => {
-        const origin = req.body.origin
-        const maxDistance = req.body.distance || undefined
-        const result = await repository.getUpcomingTrips(origin, maxDistance)
-        res.send(result)
-    })
-
-    router.get('/:tripId', async (req, res) => {
-        const trip = repository.getTripById(req.params.tripId)
-        res.send(trip)
-    })
-    
-    router.post('/', validate(tripSchema), async (req, res) => {
-        const newTrip = {
-            spotId: req.body.spotId,
-            date: req.body.date,
-            name: req.body.name
-        }
-        const result = 'OK' //await repository.saveTrip(newTrip)
-        res.send(result)
-    })
-    
-    router.patch('/:tripId/name', validate(nameSchema), async (req, res) => {
-        const tripId = req.params.tripId
-        const newName = req.body.newName
-        let result = await repository.updateName(tripId, newName)
-        res.send(result)
-    })
-
-    router.patch('/:tripId/date', validate(dateSchema), async (req, res) => {
-        const tripId = req.params.tripId
-        const newDate = req.body.newDate
-        let result = await repository.updateDate(tripId, newDate)
-        res.send(result)
-    })
-    
-    router.delete('/:tripId', async (req, res) => {
-        repository.deleteTrip(req.params.tripId)
-        res.send({data: 'DELETE trip'})
-    })
+    router.get('/upcoming', controller.getUpcomingTrips)
+    router.get('/:tripId', controller.getTripById)
+    router.post('/', validate(tripSchema), controller.createTrip)
+    router.patch('/:tripId/name', validate(nameSchema), controller.updateName)
+    router.patch('/:tripId/date', validate(dateSchema), controller.updateDate)
+    router.delete('/:tripId', controller.deleteTrip)
 
     return router
 }
