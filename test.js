@@ -1,5 +1,4 @@
 import { JSDOM } from 'jsdom'
-import _ from 'lodash'
 import { idToStar } from './star-to-index.js'
 
 const visualCrossingApiKey = 'X6XEVSJRDWZV4D9V2VWARKL24'
@@ -117,26 +116,6 @@ export function getWeatherHistogram(baseDate, hourlyForecast) {
     return histrogram
 }
 
-function minutesBetweenDates(baseDate, date) {
-    return Math.floor((date - baseDate) / (1000 * 60))
-}
-
-function offsetDateByMinutes(baseDate, range) {
-    return new Date(range * 60 * 1000 + baseDate)
-}
-
-function computeVisibility(ephimeres, cloudcover, cloudCoverThreshold) {
-    let visibilityHistogram = Array(ephimeres.length).fill(1)
-
-    for (let i = 0; i < ephimeres.length; i++) {
-        if (cloudcover[i] < cloudCoverThreshold) {
-            visibilityHistogram[i] = ephimeres[i]
-        }
-    }
-
-    return visibilityHistogram
-}
-
 function startOf(histogram) {
     for (let i = 0; i < histogram.length; i++) {
         if (histogram[i] > 0) {
@@ -154,22 +133,6 @@ function endOf(histogram) {
         }
     }
     return undefined
-}
-
-export function rateInterval(start, end, ephimeresHistograms, weatherHistogram) {
-    let maxEphimeresScores = Array(ephimeresHistograms.length).fill(0)
-
-    for (let i = start; i <= end; i++) {
-        if (weatherHistogram[i] > 0) {
-            for (let j = 0; j < ephimeresHistograms.length; j++) {
-                if (ephimeresHistograms[j][i] > maxEphimeresScores[j]) {
-                    maxEphimeresScores[j] = ephimeresHistograms[j][i]
-                }
-            }
-        }        
-    }
-
-    return maxEphimeresScores.reduce((acc, curr) => acc + curr)
 }
 
 export async function getStarEphimeres(lattitude, longitude, stars) {
