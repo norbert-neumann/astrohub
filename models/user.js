@@ -12,8 +12,9 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             return usersCollection.findOne({username})
         },
 
-        // TODO: convert user._id to ObjectId
         async getOrCreate(user) {
+            user._id = ObjectId.createFromHexString(user._id.toString())
+
             const options = {
                 upsert: true,
                 returnOriginal: false

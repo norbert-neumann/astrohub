@@ -17,10 +17,11 @@ function createAuthRouter(repository) {
     },
         async (request, accessToken, refreshToken, profile, done) => {
     
+            const userId = '000' + profile.id
             const user = {
-                _id: profile.id,
+                _id: userId,
                 username: profile.email,
-                displayName: profile.displayName,
+                displayName: profile.given_name,
                 favouriteSpots: [],
                 trips: [],
                 friends: [],
@@ -29,7 +30,7 @@ function createAuthRouter(repository) {
 
             await repository.getOrCreate(user)
     
-            request.res.cookie('userId', profile.id)
+            request.res.cookie('userId', userId)
             return done(null, profile)
         }
     ))
