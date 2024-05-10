@@ -57,11 +57,11 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
                 {_id: ObjectId.createFromHexString(tripId)},
                 {
                     projection: {
-                    _id: 1,
-                    spotId: 1,
-                    date: { $dateToString: { date: '$date', timezone } },
-                    name: 1
-                 }
+                        _id: 1,
+                        spotId: 1,
+                        date: { $dateToString: { date: '$date', timezone } },
+                        name: 1
+                    }
                 }
             );
         },
