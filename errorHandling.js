@@ -18,7 +18,7 @@ export class NotAuthorired extends Error {
     constructor(message) {
         super(message)
         this.name = this.constructor.name
-        if (Error.captureStackTrace) { // ha létezik a függvény
+        if (Error.captureStackTrace) {
             Error.captureStackTrace(this, this.constructor)
         }
     }

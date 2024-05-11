@@ -2,6 +2,7 @@ import express from 'express'
 import validate from '../validator.js'
 import { displayNameSchema, usernameSchema } from '../schema.js'
 import createUserController from '../controllers/user.js'
+import { NotAuthorired } from '../errorHandling.js'
 
 function createUserRouter(repository) {
     const router = express.Router()
@@ -13,7 +14,7 @@ function createUserRouter(repository) {
         if (cookieUserId && cookieUserId === paramUserId) {
             next()
         } else {
-            res.sendStatus(401)
+            next(new NotAuthorired('Incorrect user id'))
         }
     })
 
