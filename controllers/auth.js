@@ -44,7 +44,6 @@ function createAuthController(repository) {
 
     const registerUser = async (req, res, next) => {
         try {
-            // TODO: validate this?
             const {username, displayName, password} = req.body
             const hashedPassword = await bcrypt.hash(password, 10)
 

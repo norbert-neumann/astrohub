@@ -78,20 +78,28 @@ export default function createSpotFunctions(spotsCollection) {
         },
 
         updateName(spotId, newName) {
-            spotsCollection.updateOne(
+            return spotsCollection.updateOne(
                 {_id: ObjectId.createFromHexString(spotId)},
                 {$set: {name: newName}}
             )
         },
 
         updateRating(spotId, newRating) {
-            spotsCollection.updateOne(
+            return spotsCollection.updateOne(
                 {_id: ObjectId.createFromHexString(spotId)},
                 {$set: {rating: newRating}} //TODO: use something else instead of $set?
             )
         },
 
         async saveSpot(spot) {
+            const geoLocation = {
+                type: "Point",
+                coordinates: [spot.longitude, spot.lattitude]
+            }
+            spot.location = geoLocation
+            delete spot.lattitude
+            delete spot.longitude
+            console.log(spot)
             await spotsCollection.insertOne(spot)
         },
 
