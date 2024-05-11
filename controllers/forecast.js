@@ -6,33 +6,37 @@ import { starToId } from '../star-to-index.js'
 
 export default function getForecastController() {
 
-    const getForecast = async (req, res) => {
-        const lattitude = req.body.lattitude
-        const longitude = req.body.longitude
-        const starIds = req.body.stars.map(star => starToId[star])
-        const timeZone = req.body.timeZone || 'UTC'
-        const threshold = req.body.threshold || 30.0
-    
-        // TODO: package these to Promise array
-        const ephimeres = await ephimeresService.getStarEphimeres(lattitude, longitude, starIds)
-        const { cloudCover, nights } = await weatherService.getWeatherData(lattitude, longitude)
-    
-        const nightForecasts = nights.map(night => forecastService.stargazingForecast({
-                start: night[0],
-                end: night[1],
-                ephimeresHistograms: ephimeres,
-                cloudCoverHistogram: cloudCover,
-                starIds: starIds
-            })
-        )
-    
-        let forecast = await Promise.all(nightForecasts)
+    const getForecast = async (req, res, next) => {
+        try {
+            const lattitude = req.body.lattitude
+            const longitude = req.body.longitude
+            const starIds = req.body.stars.map(star => starToId[star])
+            const timeZone = req.body.timeZone || 'UTC'
+            const threshold = req.body.threshold || 30.0
         
-        if (timeZone !== 'UTC') {
-            forecast = dateService.convertForecastToTimeZone(forecast, timeZone)
+            // TODO: package these to Promise array
+            const ephimeres = await ephimeresService.getStarEphimeres(lattitude, longitude, starIds)
+            const { cloudCover, nights } = await weatherService.getWeatherData(lattitude, longitude)
+        
+            const nightForecasts = nights.map(night => forecastService.stargazingForecast({
+                    start: night[0],
+                    end: night[1],
+                    ephimeresHistograms: ephimeres,
+                    cloudCoverHistogram: cloudCover,
+                    starIds: starIds
+                })
+            )
+        
+            let forecast = await Promise.all(nightForecasts)
+            
+            if (timeZone !== 'UTC') {
+                forecast = dateService.convertForecastToTimeZone(forecast, timeZone)
+            }
+        
+            res.send(forecast.filter(night => night.cloudCoverPct < threshold))
+        } catch (error) {
+            next(error)
         }
-    
-        res.send(forecast.filter(night => night.cloudCoverPct < threshold))
     }
 
     return {
