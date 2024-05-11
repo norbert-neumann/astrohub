@@ -26,8 +26,8 @@ const dateService = {
         return Math.floor((date - baseDate) / (1000 * 60))
     },
     
-    offsetDateByMinutes: (baseDate, range) => {
-        return new Date(range * 60 * 1000 + baseDate)
+    offsetDateByMinutes: (baseDateInMillis, offsetInMinutes) => {
+        return new Date(offsetInMinutes * 60 * 1000 + baseDateInMillis)
     },
     
     convertToMinutes: (day, timeString) => {
