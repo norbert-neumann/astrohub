@@ -67,14 +67,14 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
         },
 
         updateName(tripId, newName) {
-            tripsCollection.updateOne(
+            return tripsCollection.updateOne(
                 {_id: ObjectId.createFromHexString(tripId)},
                 {$set: {name: newName}}
             )
         },
 
         updateDate(tripId, newDate) {
-            tripsCollection.updateOne(
+            return tripsCollection.updateOne(
                 {_id: ObjectId.createFromHexString(tripId)},
                 {$set: {date: newDate}}
             )
@@ -84,8 +84,8 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
             await tripsCollection.insertOne(trip)
         },
 
-        deleteTrip(tripId) {
-            tripsCollection.deleteOne({_id: ObjectId.createFromHexString(tripId)})
+        async deleteTrip(tripId) {
+            await tripsCollection.deleteOne({_id: ObjectId.createFromHexString(tripId)})
         }
     }
 }
