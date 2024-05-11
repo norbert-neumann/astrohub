@@ -17,7 +17,7 @@ function createTripController(repository) {
     const createTrip = async (req, res) => {
         const newTrip = {
             spotId: req.body.spotId,
-            date: req.body.date,
+            date: new Date(req.body.date),
             name: req.body.name
         }
         const result = await repository.saveTrip(newTrip)
@@ -26,7 +26,7 @@ function createTripController(repository) {
 
     const updateName = async (req, res) => {
         const tripId = req.params.tripId
-        const newName = req.body.newName
+        const newName = new Date(req.body.newName)
         let result = await repository.updateName(tripId, newName)
         res.send(result)
     }

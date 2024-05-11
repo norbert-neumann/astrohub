@@ -54,19 +54,6 @@ export const ratingSchema = {
     required: ['rating']
 }
 
-
-export const dateSchema = {
-    $schema: "http://json-schema.org/draft-07/schema#",
-    type: 'object',
-    properties: {
-        date: {
-            type: 'integer',
-            minimum: Date.now()
-        }
-    },
-    required: ['date']
-}
-
 export const tripSchema = {
     $schema: "http://json-schema.org/draft-07/schema#",
     type: 'object',
@@ -76,7 +63,6 @@ export const tripSchema = {
             minLength: 24,
             minLength: 24
         },
-        ...dateSchema.properties,
         ...nameSchema.properties
     },
     required: ['spotId', 'date', 'name'],
