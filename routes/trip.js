@@ -1,7 +1,7 @@
 import express from 'express'
 import validate from '../validator.js'
 import { tripSchema, nameSchema } from '../schema.js'
-import createTripController from '../controllers/trips.js'
+import createTripController from '../controllers/trip.js'
 import { BadRequest } from '../errorHandling.js'
 
 function createTripRouter(repository) {
