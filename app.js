@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser'
 import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import passport from 'passport'
+import { errorHandler } from './errorHandling.js'
 
 export function createApp(repository) {
 
@@ -28,10 +29,7 @@ export function createApp(repository) {
     app.use('/trips', tripRouter(repository.trips))
     app.use('/forecast', forecastRouter(repository))
 
-    app.use((err, req, res, next) => {
-        console.log('An error has occoured!')
-        res.status(400).send(err.message)
-    })
+    app.use(errorHandler)
 
     return app
 }

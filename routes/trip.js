@@ -2,6 +2,7 @@ import express from 'express'
 import validate from '../validator.js'
 import { tripSchema, nameSchema } from '../schema.js'
 import createTripController from '../controllers/trips.js'
+import { BadRequest } from '../errorHandling.js'
 
 function createTripRouter(repository) {
     const router = express.Router()
@@ -10,13 +11,17 @@ function createTripRouter(repository) {
     const validateDate = (req, res, next) => {
         if (req.body.date) {
             const date = new Date(req.body.date)
-            if (date.toString() !== 'Invalid Date' && date > new Date()) {
-                return next()
+            if (date.toString() === 'Invalid Date') {
+                return next(new BadRequest('Date is invalid'))
             }
-            // throw invalid date format
+            if (date <= new Date()) {
+                return next(new BadRequest(`Date must be greater than ${new Date().toISOString()}`))
+            }
+
+            return next()
         }
-        // thorw request body must contain date field
-        res.sendStatus(500)
+        
+        return next(new BadRequest('Request body must contain a date field'))
     }
 
     router.get('/upcoming', controller.getUpcomingTrips)
