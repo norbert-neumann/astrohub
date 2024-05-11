@@ -32,13 +32,20 @@ const ephimeresService = {
             });
 
             const responses = await Promise.all(ephimeresRequests)
+            console.log(responses)
             const htmls = await Promise.all(responses.map(r => r.text()))
+            console.log(htmls)
             const data = htmls.map(html => new JSDOM(html).window.document.querySelector('pre').textContent)
             const allIntervals = data.map(rawText => convertEphimeresToIntervals(rawText))
 
             const histrograms = allIntervals.map(intervals => getEphimeresHistogram(intervals))
             resolve(histrograms)
         })
+    },
+
+    getTestEphimeres: async () => {
+        const response = await fetch('https://aa.usno.navy.mil/calculated/mrst')
+        return await response.text()
     }
 }
 
