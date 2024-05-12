@@ -1,48 +1,95 @@
 import fetchMock from 'jest-fetch-mock';
 import ephimeresService from '../services/ephimeresService.js';
+import mockedResponses from '../mocked-data/usno-responses.js'
 
+const expectedResultLength = 27360
 
-const mockedResponse = 
-`<pre style="text-align: left; margin-left: auto; margin-right: auto;">
-     
-                      Astronomical Applications Department                      
-                             U. S. Naval Observatory                            
-                            Washington, DC 20392-5420                           
-     
-                               Regulus                               
-     
-                                                                     
-          Location:  E 18°54&#39;00.0&#34;, N47°36&#39;00.0&#34;,     0m           
-             (Longitude referred to Greenwich meridian)              
-     
-                        Time Zone: Greenwich                         
-     
-      Date               Rise  Az.       Transit Alt.       Set  Az.
-     (Zone)  
-                          h  m   °         h  m  °          h  m   °
-2024 Mar 30 (Sat)        13:24  72        20:19 54S        03:19 288                 
-2024 Mar 31 (Sun)        13:20  72        20:15 54S        03:15 288                 
-2024 Apr 01 (Mon)        13:16  72        20:11 54S        03:11 288                 
-2024 Apr 02 (Tue)        13:12  72        20:07 54S        03:07 288                 
-2024 Apr 03 (Wed)        13:08  72        20:04 54S        03:03 288                 
+function startOf(histogram) {
+    for (let i = 0; i < histogram.length; i++) {
+        if (histogram[i] > 0) {
+            return i
+        }
+    }
 
+    return undefined
+}
 
-</pre>`
+function endOf(histogram) {
+    for (let i = histogram.length - 1; i >= 0; i--) {
+        if (histogram[i] > 0) {
+            return i
+        }
+    }
+    return undefined
+}
+
 
 describe('ephimeresService', () => {
     beforeEach(() => {
-        fetchMock.enableMocks();
-    });
+        fetchMock.enableMocks()
+    })
 
     afterEach(() => {
-        fetchMock.resetMocks();
-    });
+        fetchMock.resetMocks()
+    })
 
-    it('should return expected values', async () => {
-        fetchMock.mockResponseOnce(mockedResponse)
+    it('should return an empty array given no stars', async () => {
+        const lattitude = 0.0
+        const longitude = 0.0
+        const stars = []
+        fetchMock.mockResponseOnce(mockedResponses.singleRowResponse)
 
-        const result = await ephimeresService.getStarEphimeres(1, 1, [-12]);
-        console.log(result)
-        expect(result).toBe('mocked response');
-    });
-});
+        const result = await ephimeresService.getStarEphimeres(lattitude, longitude, stars)
+        
+        expect(Array.isArray(result)).toBe(true)
+        expect(result.length).toBe(0)
+    }),
+
+    it('should return an array with length=1 and expected sub-array length given one star', async () => {
+        const lattitude = 0.0
+        const longitude = 0.0
+        const stars = [0]
+        fetchMock.mockResponseOnce(mockedResponses.singleRowResponse)
+
+        const result = await ephimeresService.getStarEphimeres(lattitude, longitude, stars)
+        
+        expect(Array.isArray(result)).toBe(true)
+        expect(result.length).toBe(1)
+        expect(result[0].length).toBe(expectedResultLength)
+    }),
+
+    it('should return an array with length=10 expected sub-array lengths given 10 stars', async () => {
+        const lattitude = 0.0
+        const longitude = 0.0
+        const stars = []
+        for (let i = 0; i < 10; i++) {
+            stars.push(i)
+            fetchMock.mockResponse(mockedResponses.singleRowResponse)
+        }
+
+        const result = await ephimeresService.getStarEphimeres(lattitude, longitude, stars)
+        
+        expect(Array.isArray(result)).toBe(true)
+        expect(result.length).toBe(10)
+        result.forEach(arr => expect(arr.length).toBe(expectedResultLength))
+    }),
+
+    it('should return expected ephimeres', async () => {
+        const lattitude = 0.0
+        const longitude = 0.0
+        const stars = [0]
+        const expectedStart = 600 // -> 10 hours in minutes
+        const expectedEnd = 605 // -> 10 hours and 5 minutes
+        fetchMock.mockResponseOnce(mockedResponses.singleRowResponse)
+
+
+        const result = await ephimeresService.getStarEphimeres(lattitude, longitude, stars)
+        const start = startOf(result[0])
+        const end = endOf(result[0])
+        
+        expect(Array.isArray(result)).toBe(true)
+        expect(result.length).toBe(1)
+        expect(start).toBe(expectedStart)
+        expect(end).toBe(expectedEnd)
+    })
+})

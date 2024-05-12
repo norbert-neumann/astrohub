@@ -32,9 +32,7 @@ const ephimeresService = {
             });
 
             const responses = await Promise.all(ephimeresRequests)
-            console.log(responses)
             const htmls = await Promise.all(responses.map(r => r.text()))
-            console.log(htmls)
             const data = htmls.map(html => new JSDOM(html).window.document.querySelector('pre').textContent)
             const allIntervals = data.map(rawText => convertEphimeresToIntervals(rawText))
 
