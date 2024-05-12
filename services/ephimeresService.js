@@ -53,20 +53,25 @@ function convertEphimeresToIntervals(rawText) {
 
     let intervals = []
     let rise, set
+    let skippedDays = 0
 
     for (let day = 0; day < riseSetTable.length; day++) {
+        const correctedDay = day - skippedDays
         const row = riseSetTable[day];
         rise = row.substring(25, 30)
         set = row.substring(59, 64)
 
         if (rise.trim()) {
-            let riseInMinutes = dateService.convertToMinutes(day, rise)
-            let setInMinutes = dateService.convertToMinutes(day, set)
+            let riseInMinutes = dateService.convertToMinutes(correctedDay, rise)
+            let setInMinutes = dateService.convertToMinutes(correctedDay, set)
 
             if (riseInMinutes > setInMinutes) {
-                setInMinutes = dateService.convertToMinutes(day + 1, set)
+                setInMinutes = dateService.convertToMinutes(correctedDay + 1, set)
             }
             intervals.push([riseInMinutes, setInMinutes])
+        }
+        else {
+            skippedDays++
         }
     }
 

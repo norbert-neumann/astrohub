@@ -54,7 +54,7 @@ describe('ephimeresService', () => {
         result.forEach(arr => expect(arr[0].length).toBe(2)) // 2, since this is the interval with the [start, end] values
     }),
 
-    it('should return expected ephimeres', async () => {
+    it('should return expected interval given a simple response', async () => {
         const lattitude = 0.0
         const longitude = 0.0
         const stars = [0]
@@ -68,5 +68,62 @@ describe('ephimeresService', () => {
         expect(result.length).toBe(1)
         expect(result[0].length).toBe(1)
         expect(result[0][0]).toStrictEqual(expectedInterval)
+    }),
+
+    it('should return expected interval given a day boundary crossing response', async () => {
+        const lattitude = 0.0
+        const longitude = 0.0
+        const stars = [0]
+        const expectedInterval = [1439, 1441] // [23h + 59min, 23h + 59min + 2min] in minutes
+        fetchMock.mockResponseOnce(mockedResponses.singleRowResponseWithDayBoundaryCross)
+
+
+        const result = await ephimeresService.getStarEphimeres(lattitude, longitude, stars)
+        
+        expect(Array.isArray(result)).toBe(true)
+        expect(result.length).toBe(1)
+        expect(result[0].length).toBe(1)
+        expect(result[0][0]).toStrictEqual(expectedInterval)
+    }),
+
+    it('should return expected intervals given multi row response', async () => {
+        const lattitude = 0.0
+        const longitude = 0.0
+        const stars = [0]
+        const expectedIntervals = [
+            [635, 1470],
+            [2071, 2906],
+            [3507, 4342],
+        ]
+        fetchMock.mockResponseOnce(mockedResponses.multiRowResponse)
+
+
+        const result = await ephimeresService.getStarEphimeres(lattitude, longitude, stars)
+        
+        expect(Array.isArray(result)).toBe(true)
+        expect(result.length).toBe(1)
+        expect(result[0].length).toBe(3)
+        expect(result[0]).toStrictEqual(expectedIntervals)
+    }),
+
+    it('should return expected intervals given multi row response with invalid row', async () => {
+        const lattitude = 0.0
+        const longitude = 0.0
+        const stars = [0]
+        const expectedIntervals = [
+            [607, 1442],
+            [2043, 2874],
+        ]
+        fetchMock.mockResponseOnce(mockedResponses.multiRowResponseWithInvalidRow)
+
+
+        const result = await ephimeresService.getStarEphimeres(lattitude, longitude, stars)
+        
+        console.log(result)
+
+        expect(Array.isArray(result)).toBe(true)
+        expect(result.length).toBe(1)
+        expect(result[0].length).toBe(2)
+        expect(result[0]).toStrictEqual(expectedIntervals)
     })
 })
