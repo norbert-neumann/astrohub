@@ -46,12 +46,12 @@ export default function getForecastController() {
 }
 
 
-function getEphimeresHistogram(intervals) {
+function convertIntervalsToHistogram(intervals) {
     let histrogram = Array(27360).fill(0)
 
     for (const interval of intervals) {
         for (let i = interval[0]; i <= interval[1]; i++) {
-            histrogram[i] = 1
+            histrogram[i] = intervals[2]
         }
     }
 

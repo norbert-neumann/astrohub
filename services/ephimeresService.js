@@ -68,7 +68,7 @@ function convertEphimeresToIntervals(rawText) {
             if (riseInMinutes > setInMinutes) {
                 setInMinutes = dateService.convertToMinutes(correctedDay + 1, set)
             }
-            intervals.push([riseInMinutes, setInMinutes])
+            intervals.push([riseInMinutes, setInMinutes, 1])
         }
         else {
             skippedDays++

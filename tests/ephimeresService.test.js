@@ -34,7 +34,7 @@ describe('ephimeresService', () => {
         expect(Array.isArray(result)).toBe(true)
         expect(result.length).toBe(1) // 1, since we only queried 1 star
         expect(result[0].length).toBe(1) // 1, since the mockedResponse has only one row
-        expect(result[0][0].length).toBe(2) // 2, since this is the interval with the [start, end] values
+        expect(result[0][0].length).toBe(3) // 3, since this is the interval with the [start, end, 1] values
     }),
 
     it('should return an 10 invervals given 10 stars', async () => {
@@ -51,14 +51,14 @@ describe('ephimeresService', () => {
         expect(Array.isArray(result)).toBe(true)
         expect(result.length).toBe(10) // 10, since we queried 10 stars
         result.forEach(arr => expect(arr.length).toBe(1)) // 1, since the mockedResponse has only one row
-        result.forEach(arr => expect(arr[0].length).toBe(2)) // 2, since this is the interval with the [start, end] values
+        result.forEach(arr => expect(arr[0].length).toBe(3)) // , since this is the interval with the [start, end, 1] values
     }),
 
     it('should return expected interval given a simple response', async () => {
         const lattitude = 0.0
         const longitude = 0.0
         const stars = [0]
-        const expectedInterval = [600, 605] // [10 hours, 10 hours + 5 minutes] in minutes
+        const expectedInterval = [600, 605, 1] // [10 hours, 10 hours + 5 minutes] in minutes
         fetchMock.mockResponseOnce(mockedResponses.singleRowResponse)
 
 
@@ -74,7 +74,7 @@ describe('ephimeresService', () => {
         const lattitude = 0.0
         const longitude = 0.0
         const stars = [0]
-        const expectedInterval = [1439, 1441] // [23h + 59min, 23h + 59min + 2min] in minutes
+        const expectedInterval = [1439, 1441, 1] // [23h + 59min, 23h + 59min + 2min] in minutes
         fetchMock.mockResponseOnce(mockedResponses.singleRowResponseWithDayBoundaryCross)
 
 
@@ -91,9 +91,9 @@ describe('ephimeresService', () => {
         const longitude = 0.0
         const stars = [0]
         const expectedIntervals = [
-            [635, 1470],
-            [2071, 2906],
-            [3507, 4342],
+            [635, 1470, 1],
+            [2071, 2906, 1],
+            [3507, 4342, 1],
         ]
         fetchMock.mockResponseOnce(mockedResponses.multiRowResponse)
 
@@ -111,15 +111,13 @@ describe('ephimeresService', () => {
         const longitude = 0.0
         const stars = [0]
         const expectedIntervals = [
-            [607, 1442],
-            [2043, 2874],
+            [607, 1442, 1],
+            [2043, 2874, 1],
         ]
         fetchMock.mockResponseOnce(mockedResponses.multiRowResponseWithInvalidRow)
 
 
         const result = await ephimeresService.getStarEphimeres(lattitude, longitude, stars)
-        
-        console.log(result)
 
         expect(Array.isArray(result)).toBe(true)
         expect(result.length).toBe(1)

@@ -14,11 +14,11 @@ const visualCrossingParams = {
 
 const weatherService = {
 
-    getWeatherData: (lattitude, longitude) => {
+    getWeatherData: (lattitude, longitude, currentDate=new Date()) => {
         return new Promise(async (resolve, reject) => {
         
             const location = [lattitude, longitude].join(',')
-            const currentDate = new Date()
+            //const currentDate = new Date()
             const baseDate = currentDate.setUTCHours(0, 0, 0, 0)
 
             let params =  new URLSearchParams(visualCrossingParams)
@@ -29,16 +29,16 @@ const weatherService = {
             let weatherData = await weatherResponse.json()
             let hourlyForecast = weatherData.locations[location].values
 
-            let weatherHistogram = getWeatherHistogram(baseDate, hourlyForecast)
+            let clearSykIntervals = getClearSkyIntervals(baseDate, hourlyForecast)
             let nightIntervals = getNightIntervals(baseDate, hourlyForecast)
 
-            resolve({cloudCover: weatherHistogram, nights: nightIntervals})
+            resolve({weatherIntervals: clearSykIntervals, nightIntervals: nightIntervals})
         })
     }   
 }
 
-function getWeatherHistogram(baseDate, hourlyForecast) {
-    let histrogram = Array(27360).fill(0)
+function getClearSkyIntervals(baseDate, hourlyForecast) {
+    let intervals = []
 
     hourlyForecast.forEach(forecast => {
         const startDate = new Date(forecast.datetimeStr)
@@ -48,12 +48,10 @@ function getWeatherHistogram(baseDate, hourlyForecast) {
         const startDateInMinutes = dateService.minutesBetweenDates(baseDate, startDate)
         const endDateInMinutes = dateService.minutesBetweenDates(baseDate, endDate)
 
-        for (let i = startDateInMinutes; i <= endDateInMinutes; i++) {
-            histrogram[i] = forecast.cloudcover
-        }
+        intervals.push([startDateInMinutes, endDateInMinutes, forecast.cloudcover])
     })
 
-    return histrogram
+    return intervals
 }
 
 function getNightIntervals(baseDate, values) {
