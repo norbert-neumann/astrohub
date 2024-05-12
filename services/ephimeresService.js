@@ -34,10 +34,9 @@ const ephimeresService = {
             const responses = await Promise.all(ephimeresRequests)
             const htmls = await Promise.all(responses.map(r => r.text()))
             const data = htmls.map(html => new JSDOM(html).window.document.querySelector('pre').textContent)
-            const allIntervals = data.map(rawText => convertEphimeresToIntervals(rawText))
+            const intervals = data.map(rawText => convertEphimeresToIntervals(rawText))
 
-            const histrograms = allIntervals.map(intervals => getEphimeresHistogram(intervals))
-            resolve(histrograms)
+            resolve(intervals)
         })
     },
 
@@ -72,19 +71,6 @@ function convertEphimeresToIntervals(rawText) {
     }
 
     return intervals
-}
-
-
-function getEphimeresHistogram(intervals) {
-    let histrogram = Array(27360).fill(0)
-
-    for (const interval of intervals) {
-        for (let i = interval[0]; i <= interval[1]; i++) {
-            histrogram[i] = 1
-        }
-    }
-
-    return histrogram
 }
 
 export default ephimeresService

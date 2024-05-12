@@ -2,28 +2,6 @@ import fetchMock from 'jest-fetch-mock';
 import ephimeresService from '../services/ephimeresService.js';
 import mockedResponses from '../mocked-data/usno-responses.js'
 
-const expectedResultLength = 27360
-
-function startOf(histogram) {
-    for (let i = 0; i < histogram.length; i++) {
-        if (histogram[i] > 0) {
-            return i
-        }
-    }
-
-    return undefined
-}
-
-function endOf(histogram) {
-    for (let i = histogram.length - 1; i >= 0; i--) {
-        if (histogram[i] > 0) {
-            return i
-        }
-    }
-    return undefined
-}
-
-
 describe('ephimeresService', () => {
     beforeEach(() => {
         fetchMock.enableMocks()
@@ -45,20 +23,21 @@ describe('ephimeresService', () => {
         expect(result.length).toBe(0)
     }),
 
-    it('should return an array with length=1 and expected sub-array length given one star', async () => {
+    it('should return an interval in a length=1 array given one star', async () => {
         const lattitude = 0.0
         const longitude = 0.0
         const stars = [0]
         fetchMock.mockResponseOnce(mockedResponses.singleRowResponse)
 
         const result = await ephimeresService.getStarEphimeres(lattitude, longitude, stars)
-        
+
         expect(Array.isArray(result)).toBe(true)
-        expect(result.length).toBe(1)
-        expect(result[0].length).toBe(expectedResultLength)
+        expect(result.length).toBe(1) // 1, since we only queried 1 star
+        expect(result[0].length).toBe(1) // 1, since the mockedResponse has only one row
+        expect(result[0][0].length).toBe(2) // 2, since this is the interval with the [start, end] values
     }),
 
-    it('should return an array with length=10 expected sub-array lengths given 10 stars', async () => {
+    it('should return an 10 invervals given 10 stars', async () => {
         const lattitude = 0.0
         const longitude = 0.0
         const stars = []
@@ -70,26 +49,24 @@ describe('ephimeresService', () => {
         const result = await ephimeresService.getStarEphimeres(lattitude, longitude, stars)
         
         expect(Array.isArray(result)).toBe(true)
-        expect(result.length).toBe(10)
-        result.forEach(arr => expect(arr.length).toBe(expectedResultLength))
+        expect(result.length).toBe(10) // 10, since we queried 10 stars
+        result.forEach(arr => expect(arr.length).toBe(1)) // 1, since the mockedResponse has only one row
+        result.forEach(arr => expect(arr[0].length).toBe(2)) // 2, since this is the interval with the [start, end] values
     }),
 
     it('should return expected ephimeres', async () => {
         const lattitude = 0.0
         const longitude = 0.0
         const stars = [0]
-        const expectedStart = 600 // -> 10 hours in minutes
-        const expectedEnd = 605 // -> 10 hours and 5 minutes
+        const expectedInterval = [600, 605] // [10 hours, 10 hours + 5 minutes] in minutes
         fetchMock.mockResponseOnce(mockedResponses.singleRowResponse)
 
 
         const result = await ephimeresService.getStarEphimeres(lattitude, longitude, stars)
-        const start = startOf(result[0])
-        const end = endOf(result[0])
         
         expect(Array.isArray(result)).toBe(true)
         expect(result.length).toBe(1)
-        expect(start).toBe(expectedStart)
-        expect(end).toBe(expectedEnd)
+        expect(result[0].length).toBe(1)
+        expect(result[0][0]).toStrictEqual(expectedInterval)
     })
 })

@@ -15,7 +15,8 @@ export default function getForecastController() {
             const threshold = req.body.threshold || 30.0
         
             // TODO: package these to Promise array
-            const ephimeres = await ephimeresService.getStarEphimeres(lattitude, longitude, starIds)
+            const ephimeresIntervals = await ephimeresService.getStarEphimeres(lattitude, longitude, starIds)
+            const ephimeres = ephimeresIntervals.map(intervals => getEphimeresHistogram(intervals))
             const { cloudCover, nights } = await weatherService.getWeatherData(lattitude, longitude)
         
             const nightForecasts = nights.map(night => forecastService.stargazingForecast({
@@ -42,4 +43,17 @@ export default function getForecastController() {
     return {
         getForecast
     }
+}
+
+
+function getEphimeresHistogram(intervals) {
+    let histrogram = Array(27360).fill(0)
+
+    for (const interval of intervals) {
+        for (let i = interval[0]; i <= interval[1]; i++) {
+            histrogram[i] = 1
+        }
+    }
+
+    return histrogram
 }
