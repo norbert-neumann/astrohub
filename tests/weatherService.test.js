@@ -12,11 +12,10 @@ describe('weatherService', () => {
     })
 
     it('should return expected weather intervals', async () => {
-        const mockedCurrentDate = new Date('2024-05-12')
         fetchMock.mockResponseOnce(mockedResponses.response)
         const expectedFirstWeatherIntervals = [960, 1020, 50.0]
 
-        const {weatherIntervals, nightItervals} = await weatherService.getWeatherData(0, 0, mockedCurrentDate)
+        const {weatherIntervals, nightItervals} = await weatherService.getWeatherData(0, 0)
 
         expect(Array.isArray(weatherIntervals)).toBe(true)
         expect(weatherIntervals.length).toBe(25) // 25, since we have 25 hours of weather data
@@ -25,13 +24,12 @@ describe('weatherService', () => {
     }),
 
     it('should return expected night intervals', async () => {
-        const mockedCurrentDate = new Date('2024-05-12')
         fetchMock.mockResponseOnce(mockedResponses.response)
         const expectedNightIntervals = [
             [1110, 1615]
         ]
 
-        const {weatherIntervals, nightIntervals} = await weatherService.getWeatherData(0, 0, mockedCurrentDate)
+        const {weatherIntervals, nightIntervals} = await weatherService.getWeatherData(0, 0)
 
         expect(Array.isArray(nightIntervals)).toBe(true)
         expect(nightIntervals.length).toBe(1) // 1, since we have 1 day amount of weather data

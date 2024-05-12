@@ -14,12 +14,10 @@ const visualCrossingParams = {
 
 const weatherService = {
 
-    getWeatherData: (lattitude, longitude, currentDate=new Date()) => {
+    getWeatherData: (lattitude, longitude) => {
         return new Promise(async (resolve, reject) => {
         
             const location = [lattitude, longitude].join(',')
-            //const currentDate = new Date()
-            const baseDate = currentDate.setUTCHours(0, 0, 0, 0)
 
             let params =  new URLSearchParams(visualCrossingParams)
             params.set('locations', location)
@@ -28,6 +26,7 @@ const weatherService = {
             let weatherResponse = await fetch(url)
             let weatherData = await weatherResponse.json()
             let hourlyForecast = weatherData.locations[location].values
+            const baseDate = new Date(hourlyForecast[0].datetimeStr).setUTCHours(0, 0, 0, 0)
 
             let clearSykIntervals = getClearSkyIntervals(baseDate, hourlyForecast)
             let nightIntervals = getNightIntervals(baseDate, hourlyForecast)
