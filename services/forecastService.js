@@ -15,7 +15,7 @@ const forecastService = {
 
         const relevantCloudCoverHistogram = cloudCoverHistogram.slice(start, end)
         const avgCloudCover = relevantCloudCoverHistogram.reduce((acc, curr) => acc + curr) / relevantCloudCoverHistogram.length
-        
+
         forecast.cloudCoverPct = avgCloudCover.toFixed(2)
 
         ephimeresHistograms.forEach((ephimeres, index) => {

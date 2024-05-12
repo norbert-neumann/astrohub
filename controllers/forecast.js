@@ -12,27 +12,25 @@ export default function getForecastController() {
             const longitude = req.body.longitude
             const starIds = req.body.stars.map(star => starToId[star])
             const timeZone = req.body.timeZone || 'UTC'
-            const threshold = req.body.threshold || 30.0
+            const threshold = req.body.threshold || 100.0
         
             // TODO: package these to Promise array
             const ephimeresIntervals = await ephimeresService.getStarEphimeres(lattitude, longitude, starIds)
-            const ephimeres = ephimeresIntervals.map(intervals => getEphimeresHistogram(intervals))
-            const { cloudCover, nights } = await weatherService.getWeatherData(lattitude, longitude)
-        
-            const nightForecasts = nights.map(night => forecastService.stargazingForecast({
+            const ephimeres = ephimeresIntervals.map(intervals => convertIntervalsToHistogram(intervals))
+            const { weatherIntervals, nightIntervals } = await weatherService.getWeatherData(lattitude, longitude)
+            const cloudCoverHistogram = convertIntervalsToHistogram(weatherIntervals)
+
+            const nightForecasts = nightIntervals.map(night => forecastService.stargazingForecast({
                     start: night[0],
                     end: night[1],
                     ephimeresHistograms: ephimeres,
-                    cloudCoverHistogram: cloudCover,
+                    cloudCoverHistogram: cloudCoverHistogram,
                     starIds: starIds
                 })
             )
         
             let forecast = await Promise.all(nightForecasts)
-            
-            if (timeZone !== 'UTC') {
-                forecast = dateService.convertForecastToTimeZone(forecast, timeZone)
-            }
+            forecast = dateService.convertForecastToTimeZone(forecast, timeZone)
         
             res.send(forecast.filter(night => night.cloudCoverPct < threshold))
         } catch (error) {
@@ -51,7 +49,7 @@ function convertIntervalsToHistogram(intervals) {
 
     for (const interval of intervals) {
         for (let i = interval[0]; i <= interval[1]; i++) {
-            histrogram[i] = intervals[2]
+            histrogram[i] = interval[2]
         }
     }
 

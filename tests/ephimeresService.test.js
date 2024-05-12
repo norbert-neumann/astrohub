@@ -1,5 +1,5 @@
-import fetchMock from 'jest-fetch-mock';
-import ephimeresService from '../services/ephimeresService.js';
+import fetchMock from 'jest-fetch-mock'
+import ephimeresService from '../services/ephimeresService.js'
 import mockedResponses from '../mocked-data/usno-responses.js'
 
 describe('ephimeresService', () => {
