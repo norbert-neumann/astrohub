@@ -10,7 +10,7 @@ import {fileURLToPath} from 'node:url'
 import passport from 'passport'
 import { errorHandler } from './errorHandling.js'
 
-export function createApp(repository) {
+export function createApp(repository, userAuthMiddleware) {
 
     const app = express()
     
@@ -24,7 +24,7 @@ export function createApp(repository) {
     app.set('view engine', 'hjs')
 
     app.use('/auth', authRouter(repository.users, passport))
-    app.use('/users', userRouter(repository.users))
+    app.use('/users', userRouter(repository.users, userAuthMiddleware))
     app.use('/spots', spotRouter(repository.spots))
     app.use('/trips', tripRouter(repository.trips))
     app.use('/forecast', forecastRouter(repository))

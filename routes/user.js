@@ -2,21 +2,12 @@ import express from 'express'
 import validate from '../validator.js'
 import { displayNameSchema, usernameSchema } from '../schema.js'
 import createUserController from '../controllers/user.js'
-import { NotAuthorired } from '../errorHandling.js'
 
-function createUserRouter(repository) {
+function createUserRouter(repository, authMiddleware) {
     const router = express.Router()
     const controller = createUserController(repository)
 
-    router.use((req, res, next) => {
-        const paramUserId = req.url.split('/')[1]
-        const cookieUserId = req.cookies.userId
-        if (cookieUserId && cookieUserId === paramUserId) {
-            next()
-        } else {
-            next(new NotAuthorired('Incorrect user id'))
-        }
-    })
+    router.use(authMiddleware)
 
     router.get('/:userId', controller.getUser)
     router.get('/:userId/friends', controller.getFriends)
