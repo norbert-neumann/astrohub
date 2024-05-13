@@ -74,7 +74,7 @@ function createUserController(repository) {
         try {
             const userId = req.params.userId
             const spotId = req.body.spotId
-            repository.addToFavouriteSpots(userId, spotId)
+            let result = await repository.addToFavouriteSpots(userId, spotId)
             res.send({data: 'POST add favourite spot'})
         } catch (error) {
             next(error)
@@ -85,7 +85,7 @@ function createUserController(repository) {
         try {
             const senderId = req.params.userId
             const friendId = req.body.friendId
-            repository.addToFriendRequests(friendId, senderId)
+            let result = repository.addToFriendRequests(friendId, senderId)
             res.send({data: 'POST add friend request'})
         } catch (error) {
             next(error)
