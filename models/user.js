@@ -196,7 +196,8 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             return result[0];
         },
         
-        
+        // Maybe add try-catch here to catch duplicate errors
+        // Or just show the error in the result and let the controller call next(err)?
         updateUsername(userId, newUsername) {
             return usersCollection.updateOne(
                 {_id: ObjectId.createFromHexString(userId)},
@@ -224,11 +225,12 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             return {exists: false, alreadyAdded: false}
         },
 
-        removeFromFavouriteSpots(userId, spotId) {
-            return usersCollection.updateOne(
+        async removeFromFavouriteSpots(userId, spotId) {
+            const result = await usersCollection.updateOne(
                 {_id: ObjectId.createFromHexString(userId)},
-                {$pull: {favouriteSpots: ObjectId.createFromHexString(spotId)}}
+                {$pull: {spots: ObjectId.createFromHexString(spotId)}}
             )
+            return {found: result.modifiedCount > 0}
         },
 
         async addToTrips(userId, tripId) {
@@ -244,11 +246,12 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             return {exists: false, alreadyAdded: false}
         },
 
-        removeFromTrips(userId, tripId) {
-            return usersCollection.updateOne(
+        async removeFromTrips(userId, tripId) {
+            const result = await usersCollection.updateOne(
                 {_id: ObjectId.createFromHexString(userId)},
                 {$pull: {trips: ObjectId.createFromHexString(tripId)}}
             )
+            return {found: result.modifiedCount > 0}
         },
 
         async addToFriendRequests(userId, senderId) {
@@ -271,11 +274,12 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             return {exists: false, alreadyFriend: false, alreadySent: false}
         },
 
-        removeFromFriendRequests(userId, senderId) {
-            return usersCollection.updateOne(
+        async removeFromFriendRequests(userId, senderId) {
+            const result = await usersCollection.updateOne(
                 {_id: ObjectId.createFromHexString(userId)},
                 {$pull: {friendRequests: ObjectId.createFromHexString(senderId)}}
             )
+            return {found: result.modifiedCount > 0}
         },
 
         async addToFriends(userId, friendId) {
@@ -292,11 +296,12 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             return {exists: false, alreadyFriend: false}
         },
 
-        removeFromFriends(userId, friendId) {
-            return usersCollection.updateOne(
+        async removeFromFriends(userId, friendId) {
+            const result = await usersCollection.updateOne(
                 {_id: userId},
                 {$pull: {friends: ObjectId.createFromHexString(friendId)}}
             )
+            return {found: result.modifiedCount > 0}
         },
 
         async saveUser(user) {

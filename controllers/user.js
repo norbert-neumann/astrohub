@@ -125,8 +125,8 @@ function createUserController(repository) {
         try {
             const userId = req.params.userId
             const friendId = req.body.friendId
-            repository.removeFromFriends(userId, friendId)
-            res.send({data: 'DELETE remove friend'})
+            const result = await repository.removeFromFriends(userId, friendId)
+            res.send(result)
         } catch (error) {
             next(error)
         }
@@ -136,8 +136,8 @@ function createUserController(repository) {
         try {
             const userId = req.params.userId
             const tripId = req.body.tripId
-            repository.removeFromTrips(userId, tripId)
-            res.send({data: 'DELETE remove trip'})
+            const result = await repository.removeFromTrips(userId, tripId)
+            res.send(result)
         } catch (error) {
             next(error)
         }
@@ -147,8 +147,8 @@ function createUserController(repository) {
         try {
             const userId = req.params.userId
             const spotId = req.body.spotId
-            repository.removeFromFavouriteSpots(userId, spotId)
-            res.send({data: 'DELETE remove favourite spot'})
+            const result = await repository.removeFromFavouriteSpots(userId, spotId)
+            res.send(result)
         } catch (error) {
             next(error)
         }
@@ -158,8 +158,8 @@ function createUserController(repository) {
         try {
             const userId = req.params.userId
             const senderId = req.body.senderId
-            repository.removeFromFriendRequests(userId, senderId)
-            res.send({data: 'DELETE remove friend request'})
+            const result = await repository.removeFromFriendRequests(userId, senderId)
+            res.send(result)
         } catch (error) {
             next(error)
         }
