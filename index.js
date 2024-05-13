@@ -14,7 +14,11 @@ const userAuthMiddleware = (req, res, next) => {
     }
 }
 
-const app = createApp(repository, userAuthMiddleware)
+const dummyAutMiddleware = (req, res, next) => {
+    next()
+}
+
+const app = createApp(repository, dummyAutMiddleware)
 
 app.listen(3000, () => {
     console.log('service running on port 3000')

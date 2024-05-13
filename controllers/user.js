@@ -1,5 +1,3 @@
-import dateService from '../services/dateService.js'
-
 function createUserController(repository) {
 
     const getUser = async (req, res, next) => {
@@ -52,8 +50,8 @@ function createUserController(repository) {
         try {
             const senderId = req.params.userId
             const friendId = req.body.friendId
-            repository.addToFriends(senderId, friendId)
-            res.send({data: 'POST add friend'})
+            const result = await repository.addToFriends(senderId, friendId)
+            res.send(result)
         } catch (error) {
             next(error)
         }
@@ -63,8 +61,8 @@ function createUserController(repository) {
         try {
             const userId = req.params.userId
             const tripId = req.body.tripId
-            repository.addToTrips(userId, tripId)
-            res.send({data: 'POST add trip'})
+            const result = await repository.addToTrips(userId, tripId)
+            res.send(result)
         } catch (error) {
             next(error)
         }
@@ -74,8 +72,8 @@ function createUserController(repository) {
         try {
             const userId = req.params.userId
             const spotId = req.body.spotId
-            let result = await repository.addToFavouriteSpots(userId, spotId)
-            res.send({data: 'POST add favourite spot'})
+            const result = await repository.addToFavouriteSpots(userId, spotId)
+            res.send(result)
         } catch (error) {
             next(error)
         }
@@ -85,8 +83,8 @@ function createUserController(repository) {
         try {
             const senderId = req.params.userId
             const friendId = req.body.friendId
-            let result = repository.addToFriendRequests(friendId, senderId)
-            res.send({data: 'POST add friend request'})
+            const result = await repository.addToFriendRequests(friendId, senderId)
+            res.send(result)
         } catch (error) {
             next(error)
         }

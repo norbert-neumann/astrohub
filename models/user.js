@@ -211,11 +211,17 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             )
         },
 
-        addToFavouriteSpots(userId, spotId) {
-            return usersCollection.updateOne(
-                {_id: ObjectId.createFromHexString(userId)},
-                {$addToSet: {favouriteSpots: ObjectId.createFromHexString(spotId)}}
-            )
+        async addToFavouriteSpots(userId, spotId) {
+            const spotObjectId = ObjectId.createFromHexString(spotId)
+            const spot = await spotsCollection.findOne({_id: spotObjectId})
+
+            if (spot) {
+                const result = await usersCollection.updateOne(
+                    {_id: ObjectId.createFromHexString(userId)},
+                    {$addToSet: {spots: spotObjectId}})
+                return {exists: true, alreadyAdded: result.modifiedCount === 0}
+            }
+            return {exists: false, alreadyAdded: false}
         },
 
         removeFromFavouriteSpots(userId, spotId) {
@@ -225,11 +231,17 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             )
         },
 
-        addToTrips(userId, tripId) {
-            return usersCollection.updateOne(
-                {_id: ObjectId.createFromHexString(userId)},
-                {$addToSet: {trips: ObjectId.createFromHexString(tripId)}}
-            )
+        async addToTrips(userId, tripId) {
+            const tripObjectId = ObjectId.createFromHexString(tripId)
+            const trip = await tripsCollection.findOne({_id: tripObjectId})
+
+            if (trip) {
+                const result = await usersCollection.updateOne(
+                    {_id: ObjectId.createFromHexString(userId)},
+                    {$addToSet: {trips: tripObjectId}})
+                return {exists: true, alreadyAdded: result.modifiedCount === 0}
+            }
+            return {exists: false, alreadyAdded: false}
         },
 
         removeFromTrips(userId, tripId) {
@@ -239,11 +251,24 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             )
         },
 
-        addToFriendRequests(userId, senderId) {
-            return usersCollection.updateOne(
-                {_id: ObjectId.createFromHexString(userId)},
-                {$addToSet: {friendRequests: ObjectId.createFromHexString(senderId)}}
-            )
+        async addToFriendRequests(userId, senderId) {
+            const receiver = await this.getUserById(userId)
+
+            if (receiver) {
+                const senderObjectId = ObjectId.createFromHexString(senderId)
+                if (receiver.friends.some(friendId => friendId.equals(senderObjectId))) {
+                    return {exists: true, alreadyFriend: true, alreadySent: false}
+                }
+                else {
+                    const result = await usersCollection.updateOne(
+                        {_id: ObjectId.createFromHexString(userId)},
+                        {$addToSet: {friendRequests: senderObjectId}}
+                    )
+                    return {exists: true, alreadyFriend: false, alreadySent: result.modifiedCount === 0}
+                }
+            }
+
+            return {exists: false, alreadyFriend: false, alreadySent: false}
         },
 
         removeFromFriendRequests(userId, senderId) {
@@ -253,11 +278,18 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             )
         },
 
-        addToFriends(userId, friendId) {
-             returnusersCollection.updateOne(
-                {_id: ObjectId.createFromHexString(userId)},
-                {$addToSet: {friends: ObjectId.createFromHexString(friendId)}}
-            )
+        async addToFriends(userId, friendId) {
+            const friend = await this.getUserById(friendId)
+
+            if (friend) {
+                const result = await usersCollection.updateOne(
+                    {_id: ObjectId.createFromHexString(userId)},
+                    {$addToSet: {friends: ObjectId.createFromHexString(friendId)}})
+
+                console.log(result)
+                return {exists: true, alreadyFriend: result.modifiedCount === 0}
+            }
+            return {exists: false, alreadyFriend: false}
         },
 
         removeFromFriends(userId, friendId) {
