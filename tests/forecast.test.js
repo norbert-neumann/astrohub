@@ -10,6 +10,10 @@ let mockedRepository = {
     trips: {}
 }
 
+const fakeUserAuthMiddleware = (req, res, next) => {
+    next()
+}
+
 describe('/forecast', () => {
     beforeEach(() => {
         fetchMock.enableMocks()
@@ -28,7 +32,7 @@ describe('/forecast', () => {
             (req) => req.url.includes('https://weather.visualcrossing.com/VisualCrossingWebServices'),
             mockedVisualCrossingResponses.response
         )
-        const app = createApp(mockedRepository)
+        const app = createApp(mockedRepository, fakeUserAuthMiddleware)
         const body = {
             lattitude: 0,
             longitude: 0,
@@ -40,7 +44,7 @@ describe('/forecast', () => {
         expect(response.statusCode).toBe(200)
     })
 
-    it.skip('get request with valid parameters returns expected results', async () => {
+    it.skip('get request with high threshold returns expected results', async () => {
         fetchMock.mockOnceIf(
             (req) => req.url.includes('https://aa.usno.navy.mil/calculated/mrst'),
             mockedUsnoResponses.singleRowMarsResponse
@@ -49,11 +53,12 @@ describe('/forecast', () => {
             (req) => req.url.includes('https://weather.visualcrossing.com/VisualCrossingWebServices'),
             mockedVisualCrossingResponses.response
         )
-        const app = createApp(mockedRepository)
+        const app = createApp(mockedRepository, fakeUserAuthMiddleware)
         const body = {
             lattitude: 0,
             longitude: 0,
-            stars: ['Mars']
+            stars: ['Mars'],
+            threshold: 50.01
         }
         const expectedResponseBody = [
             {
@@ -69,6 +74,28 @@ describe('/forecast', () => {
                 cloudCoverPct: '50.00'
             }
         ]
+
+        const response = await request(app).get('/forecast').send(body)
+
+        expect(response.body).toStrictEqual(expectedResponseBody)
+    }),
+
+    it.skip('get request with default cloud cover threshold returns empty array', async () => {
+        fetchMock.mockOnceIf(
+            (req) => req.url.includes('https://aa.usno.navy.mil/calculated/mrst'),
+            mockedUsnoResponses.singleRowMarsResponse
+        )
+        fetchMock.mockOnceIf(
+            (req) => req.url.includes('https://weather.visualcrossing.com/VisualCrossingWebServices'),
+            mockedVisualCrossingResponses.response
+        )
+        const app = createApp(mockedRepository, fakeUserAuthMiddleware)
+        const body = {
+            lattitude: 0,
+            longitude: 0,
+            stars: ['Mars']
+        }
+        const expectedResponseBody = []
 
         const response = await request(app).get('/forecast').send(body)
 

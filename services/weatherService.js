@@ -31,7 +31,7 @@ const weatherService = {
             let clearSykIntervals = getClearSkyIntervals(baseDate, hourlyForecast)
             let nightIntervals = getNightIntervals(baseDate, hourlyForecast)
 
-            resolve({weatherIntervals: clearSykIntervals, nightIntervals: nightIntervals})
+            resolve({weatherIntervals: clearSykIntervals, nightIntervals: nightIntervals, baseDate})
         })
     }   
 }

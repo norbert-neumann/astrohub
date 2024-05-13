@@ -3,9 +3,9 @@ import { idToStar } from '../star-to-index.js'
 
 const forecastService = {
     
-    stargazingForecast: ({start, end, ephimeresHistograms, cloudCoverHistogram, starIds}) => {
-        const currentDate = new Date()
-        const baseDate = currentDate.setUTCHours(0, 0, 0, 0)
+    stargazingForecast: ({start, end, ephimeresHistograms, cloudCoverHistogram, starIds, baseDate}) => {
+        // const currentDate = new Date()
+        // const baseDate = currentDate.setUTCHours(0, 0, 0, 0)
 
         let forecast = {
             sunset: dateService.offsetDateByMinutes(baseDate, start),
