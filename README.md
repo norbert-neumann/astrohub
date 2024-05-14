@@ -41,7 +41,7 @@
 - **Parameters**: 
   - `userId` (ID of the user)
 - **Request Body**:
-  - `timezone`: Response date format
+  - `timezone`: Response date time zone 
 - **Description**: Retrieves the list of past and upcoming trips associated with the user with the specified ID.
 
 ### Add Friend
