@@ -41,8 +41,8 @@
 - **Parameters**: 
   - `userId` (ID of the user)
 - **Request Body**:
-  - `timezone`: Timezone information
-- **Description**: Retrieves the list of trips associated with the user with the specified ID.
+  - `timezone`: Response date format
+- **Description**: Retrieves the list of past and upcoming trips associated with the user with the specified ID.
 
 ### Add Friend
 
@@ -72,7 +72,7 @@
   - `userId` (ID of the user)
 - **Request Body**:
   - `spotId`: ID of the favourite spot to add
-- **Description**: Adds a favourite spot to the user's list of favourite spots.
+- **Description**: Adds a spot to the user's list of favourite spots.
 
 ### Add Friend Request
 
@@ -139,8 +139,8 @@
 - **Parameters**: 
   - `userId` (ID of the user)
 - **Request Body**:
-  - `spotId`: ID of the favourite spot to remove
-- **Description**: Removes a favourite spot from the user's list of favourite spots.
+  - `spotId`: ID of the spot to remove from favourites
+- **Description**: Removes a spot from the user's list of favourite spots.
 
 ### Remove Friend Request
 
@@ -162,7 +162,7 @@
 - **Parameters**: 
   - `lattitude`: Latitude coordinates
   - `longitude`: Longitude coordinates
-  - `distance` (optional): Maximum distance in kilometers
+  - `distance` (optional): Maximum search distance in kilometers
 
 ### Get All Spots Sorted by Rating
 
@@ -172,7 +172,7 @@
 - **Parameters**: 
   - `skip` (optional): Number of spots to skip
   - `limit` (optional): Maximum number of spots to return
-  - `orderBy`: Sorting order ('asc' or 'desc')
+  - `orderBy` (optional): Sorting order ('asc' or 'desc')
 
 ### Get Spots by Partial Name
 
@@ -198,7 +198,7 @@
 - **Parameters**: 
   - `lattitude`: Latitude coordinates
   - `longitude`: Longitude coordinates
-  - `distance` (optional): Maximum distance in kilometers
+  - `distance` (optional): Maximum search distance in kilometers
 
 ### Create Spot
 
@@ -229,7 +229,7 @@
 - **Parameters**: 
   - `spotId`: ID of the spot
 - **Request Body**:
-  - `rating`: New rating for the spot
+  - `rating`: New rating of the spot
 
 ### Delete Spot
 
@@ -250,7 +250,7 @@
   - `lattitude`: Latitude coordinates
   - `longitude`: Longitude coordinates
   - `distance` (optional): Maximum distance in kilometers
-  - `timezone` (optional): Timezone information
+  - `timezone` (optional): Response date time zone
 
 ### Get Trip by ID
 
@@ -259,7 +259,7 @@
 - **Description**: Retrieves a trip by its ID.
 - **Parameters**: 
   - `tripId`: ID of the trip
-  - `timezone` (optional): Timezone information
+  - `timezone` (optional): Response date time zone
 
 ### Create Trip
 
@@ -268,7 +268,7 @@
 - **Description**: Creates a new trip.
 - **Request Body**:
   - `spotId`: ID of the spot
-  - `date`: Date of the trip
+  - `date`: Date of the trip (can be in any time zone)
   - `name`: Name of the trip
 - **Response Status Code**: 201 (Created)
 
@@ -299,3 +299,17 @@
 - **Description**: Deletes a trip.
 - **Parameters**: 
 - `tripId`: ID of the trip
+
+## Forecast Endpoint
+
+### Get Forecast
+
+- **Endpoint**: `/forecast`
+- **Method**: GET
+- **Request Body**:
+  - `lattitude`: Latitude coordinates
+  - `longitude`: Longitude coordinates
+  - `stars`: Array of star names that you want to observe
+  - `timeZone` (optional): Response date time zone (can be any valid time zone, default is UTC)
+  - `threshold` (optional): Cloud cover threshold (default: 30%)
+- **Description**: Retrieves stargazing forecast based on the provided parameters. Nights with a cloud cover percentage above the specified threshold will no be shown in the response.
