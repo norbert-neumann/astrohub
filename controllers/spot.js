@@ -64,7 +64,7 @@ function createSpotController(repository) {
                 rating: 0
             }
             const result = await repository.saveSpot(spot)
-            res.send(result)
+            res.status(201).send(result)
         } catch (error) {
             next(error)
         }

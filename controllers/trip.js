@@ -31,7 +31,7 @@ function createTripController(repository) {
                 name: req.body.name
             }
             const result = await repository.saveTrip(newTrip)
-            res.send(result)
+            res.status(201).send(result)
         } catch (error) {
             next(error)
         }
