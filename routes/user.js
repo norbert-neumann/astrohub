@@ -21,7 +21,7 @@ function createUserRouter(repository, authMiddleware) {
     router.post('/:userId/friend-requests/', controller.addFriendRequest)
 
     router.patch('/:userId/username', validate(usernameSchema), controller.updateUsername)
-    router.patch('/:userId/displayName', validate(displayNameSchema), controller.updateDisplayName)
+    router.patch('/:userId/display-name', validate(displayNameSchema), controller.updateDisplayName)
 
     router.delete('/:userId', controller.deleteUser)
     router.delete('/:userId/friends', controller.removeFriend)

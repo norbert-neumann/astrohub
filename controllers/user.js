@@ -92,20 +92,20 @@ function createUserController(repository) {
 
     const updateUsername = async (req, res, next) => {
         try {
-            let userId = req.params.userId
-            let newUsername = req.body.newUsername
-            let result = await repository.updateUsername(userId, newUsername)
+            const userId = req.params.userId
+            const newUsername = req.body.newUsername
+            const result = await repository.updateUsername(userId, newUsername)
             res.send(result)
         } catch (error) {
             next(error)
         }
     }
 
-    const updateDisplayName = async (req, res) => {
+    const updateDisplayName = async (req, res, next) => {
         try {
-            let userId = req.params.userId
-            let newDisplayName = req.body.newDisplayName
-            let result = await repository.updateDisplayName(userId, newDisplayName)
+            const userId = req.params.userId
+            const newDisplayName = req.body.newDisplayName
+            const result = await repository.updateDisplayName(userId, newDisplayName)
             res.send(result)
         } catch (error) {
             next(error)

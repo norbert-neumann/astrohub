@@ -196,20 +196,20 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             return result[0];
         },
         
-        // Maybe add try-catch here to catch duplicate errors
-        // Or just show the error in the result and let the controller call next(err)?
-        updateUsername(userId, newUsername) {
-            return usersCollection.updateOne(
+        async updateUsername(userId, newUsername) {
+            const result = await usersCollection.updateOne(
                 {_id: ObjectId.createFromHexString(userId)},
                 {$set: {username: newUsername}}
             )
+            return {changed: result.modifiedCount > 0}
         },
 
-        updateDisplayName(userId, newDisplayName) {
-            return usersCollection.updateOne(
+        async updateDisplayName(userId, newDisplayName) {
+            const result = await usersCollection.updateOne(
                 {_id: ObjectId.createFromHexString(userId)},
                 {$set: {displayName: newDisplayName}}
             )
+            return {changed: result.modifiedCount > 0}
         },
 
         async addToFavouriteSpots(userId, spotId) {
