@@ -297,6 +297,11 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
                 { $pull: { friends: userObjectId } }
             )
 
+            usersCollection.updateMany(
+                { friendRequests: { $elemMatch: { $eq: userObjectId } } },
+                { $pull: { friendRequests: userObjectId } }
+            )
+
             return {deleted: result.deletedCount > 0}
         },
     }
