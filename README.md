@@ -311,5 +311,5 @@
   - `longitude`: Longitude coordinates
   - `stars`: Array of star names that you want to observe
   - `timeZone` (optional): Response date time zone (can be any valid time zone, default is UTC)
-  - `threshold` (optional): Cloud cover threshold (default: 30%)
+  - `threshold` (optional): Cloud cover threshold (default is 30%)
 - **Description**: Retrieves stargazing forecast based on the provided parameters. Nights with a cloud cover percentage above the specified threshold will no be shown in the response.
