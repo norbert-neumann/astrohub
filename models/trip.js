@@ -66,18 +66,20 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
             );
         },
 
-        updateName(tripId, newName) {
-            return tripsCollection.updateOne(
+        async updateName(tripId, newName) {
+            const result = await tripsCollection.updateOne(
                 {_id: ObjectId.createFromHexString(tripId)},
                 {$set: {name: newName}}
             )
+            return {changed: result.modifiedCount > 0}
         },
 
-        updateDate(tripId, newDate) {
-            return tripsCollection.updateOne(
+        async updateDate(tripId, newDate) {
+            const result = await tripsCollection.updateOne(
                 {_id: ObjectId.createFromHexString(tripId)},
                 {$set: {date: newDate}}
             )
+            return {changed: result.modifiedCount > 0}
         },
 
         async saveTrip(trip) {

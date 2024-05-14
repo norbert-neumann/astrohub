@@ -39,7 +39,7 @@ function createTripController(repository) {
     const updateName = async (req, res, next) => {
         try {
             const tripId = req.params.tripId
-            const newName = new Date(req.body.newName)
+            const newName = req.body.name
             let result = await repository.updateName(tripId, newName)
             res.send(result)
         } catch (error) {
@@ -50,7 +50,7 @@ function createTripController(repository) {
     const updateDate = async (req, res, next) => {
         try {
             const tripId = req.params.tripId
-            const newDate = req.body.newDate
+            const newDate = new Date(req.body.date)
             let result = await repository.updateDate(tripId, newDate)
             res.send(result)
         } catch (error) {
