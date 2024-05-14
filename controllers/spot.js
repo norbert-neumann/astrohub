@@ -2,9 +2,10 @@ function createSpotController(repository) {
     
     const getSpotsSortedByDistance = async (req, res, next) => {
         try {
-            const origin = req.body.origin
+            const lattitude = req.body.lattitude
+            const longitude = req.body.longitude
             const distanceInKm = req.body.distance || undefined
-            const result = await repository.getSpotsSortedByDistanceIncludeDistance(origin, distanceInKm)
+            const result = await repository.getSpotsSortedByDistanceIncludeDistance(lattitude, longitude, distanceInKm)
             res.send(result)
         } catch (error) {
             next(error)
@@ -44,9 +45,10 @@ function createSpotController(repository) {
 
     const getSpotsWithinDistance = async (req, res, next) => {
         try {
-            const origin = req.body.origin
+            const lattitude = req.body.lattitude
+            const longitude = req.body.longitude
             const distanceInKm = req.body.distance || undefined
-            const spots = await repository.getSpotsWithinDistance(origin, distanceInKm)
+            const spots = await repository.getSpotsWithinDistance(lattitude, longitude, distanceInKm)
             res.send(spots)
         } catch (error) {
             next(error)

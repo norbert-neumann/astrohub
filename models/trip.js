@@ -6,10 +6,10 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
             return tripsCollection.find().toArray()
         },
 
-        async getUpcomingTrips(origin, distanceInKm=50.0, timezone='UTC') {
+        async getUpcomingTrips(lattitude, longitude, distanceInKm=50.0, timezone='UTC') {
             const geoOrigin = {
                 type: "Point",
-                coordinates: [origin.longitude, origin.lattitude]
+                coordinates: [longitude, lattitude]
             }
 
             const spotsWithinDistance = await spotsCollection.find({

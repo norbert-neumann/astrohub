@@ -19,8 +19,8 @@ export default function createSpotFunctions(spotsCollection) {
             return spotsCollection.find({name}).toArray()
         },
 
-        getSpotsWithinDistance(origin, distanceInKm=50.0) {
-            const pointP = { type: "Point", coordinates: [origin.longitude, origin.lattitude] }
+        getSpotsWithinDistance(lattitude, longitude, distanceInKm=50.0) {
+            const pointP = { type: "Point", coordinates: [longitude, lattitude] }
             const filter = {
                 location: {
                     $geoWithin: {
@@ -38,13 +38,13 @@ export default function createSpotFunctions(spotsCollection) {
             return this.getAllSpots({filter, sort})
         },
 
-        getSpotsSortedByDistanceIncludeDistance(origin, maxDistanceInKm=30.0) {
+        getSpotsSortedByDistanceIncludeDistance(lattitude, longitude, maxDistanceInKm=30.0) {
             return spotsCollection.aggregate([
                 {
                     $geoNear: {
                         near: {
                             type: "Point",
-                            coordinates: [origin.longitude, origin.lattitude]
+                            coordinates: [longitude, lattitude]
                         },
                         distanceField: "distance",
                         maxDistance: maxDistanceInKm * 1000,
