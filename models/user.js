@@ -5,11 +5,12 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
         getUserById(userId) {
             return usersCollection.findOne(
                 {_id: ObjectId.createFromHexString(userId)},
+                {projection: {password: 0}}
             )
         },
 
         getUserByUsername(username) {
-            return usersCollection.findOne({username})
+            return usersCollection.findOne({username}, {projection: {password: 0}})
         },
 
         async getOrCreate(user) {
@@ -47,13 +48,15 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
                 {
                     $project: {
                         _id: 0,
-                        friends: 1
+                        "friends.password": 0,
+                        'friends.friendRequests': 0
                     }
                 }
-            ]).toArray()
+            ]).toArray();
             
-            return result[0]
+            return {friends: result[0].friends}
         },
+        
 
         async getFriendRequests(userId) {
             const result = await usersCollection.aggregate([
@@ -73,12 +76,16 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
                 {
                     $project: {
                         _id: 0,
-                        friendRequests: 1
+                        "friendRequests.password": 0,
+                        'friendRequests.friendRequests': 0,
+                        'friendRequests.trips': 0,
+                        'friendRequests.favouriteSpots': 0,
+                        'friendRequests.friends': 0
                     }
                 }
-            ]).toArray()
+            ]).toArray();
             
-            return result[0]
+            return {friendRequests: result[0].friendRequests}
         },
 
         async getFavouriteSpots(userId) {
@@ -99,12 +106,12 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
                 {
                     $project: {
                         _id: 0,
-                        favouriteSpots: 1
+                        'favouriteSpots.location': 0
                     }
                 }
-            ]).toArray()
+            ]).toArray();
             
-            return result[0]
+            return {favouriteSpots: result[0].favouriteSpots}
         },
 
         async getTrips_(userId) {
