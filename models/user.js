@@ -57,7 +57,6 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             return {friends: result[0].friends}
         },
         
-
         async getFriendRequests(userId) {
             const result = await usersCollection.aggregate([
                 {
@@ -290,7 +289,14 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
         },
 
         async deleteUser(userId) {
-            const result = await usersCollection.deleteOne({_id: ObjectId.createFromHexString(userId)})
+            const userObjectId = ObjectId.createFromHexString(userId)
+            const result = await usersCollection.deleteOne({_id: userObjectId})
+
+            usersCollection.updateMany(
+                { friends: { $elemMatch: { $eq: userObjectId } } },
+                { $pull: { friends: userObjectId } }
+            )
+
             return {deleted: result.deletedCount > 0}
         },
     }
