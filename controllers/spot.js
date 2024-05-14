@@ -61,8 +61,8 @@ function createSpotController(repository) {
                 name: req.body.name,
                 rating: 0
             }
-            await repository.saveSpot(spot)
-            res.send({created: true})
+            const result = await repository.saveSpot(spot)
+            res.send(result)
         } catch (error) {
             next(error)
         }

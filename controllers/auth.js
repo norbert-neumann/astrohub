@@ -4,7 +4,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth2'
 const GOOGLE_CLIENT_ID = '197387661875-k862cf23lkefonm2ntfj16i1k3teb6vu.apps.googleusercontent.com'
 const GOOGLE_CLIENT_SECRET = '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'
 
-function createAuthController(repository) {
+function createAuthController(userRepository) {
     const googleStrategy = new GoogleStrategy({
         clientID: GOOGLE_CLIENT_ID,
         clientSecret: GOOGLE_CLIENT_SECRET,
@@ -22,7 +22,7 @@ function createAuthController(repository) {
             friendRequests: []
         }
 
-        await repository.getOrCreate(user)
+        await userRepository.getOrCreate(user)
         request.res.cookie('userId', userId)
         return done(null, profile)
     })
@@ -57,7 +57,7 @@ function createAuthController(repository) {
                 password: hashedPassword
             }
 
-            const result = await repository.saveUser(user)
+            const result = await userRepository.saveUser(user)
             res.cookie('userId', result.insertedId.toString())
             res.redirect('/auth')
         } catch (error) {
@@ -68,7 +68,7 @@ function createAuthController(repository) {
     const loginUser = async (req, res, next) => {
         try {
             const {username, password} = req.body
-            const user = await repository.getUserByUsername(username)
+            const user = await userRepository.getUserByUsername(username)
 
             if (!user) {
                 res.redirect('/')

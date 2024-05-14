@@ -81,7 +81,8 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
         },
 
         async saveTrip(trip) {
-            await tripsCollection.insertOne(trip)
+            trip.spotId = ObjectId.createFromHexString(trip.spotId, )
+            return await tripsCollection.insertOne(trip, {$project: {_id: 1}})
         },
 
         async deleteTrip(tripId) {

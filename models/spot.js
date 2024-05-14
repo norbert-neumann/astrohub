@@ -86,7 +86,7 @@ export default function createSpotFunctions(spotsCollection) {
             spot.location = geoLocation
             delete spot.lattitude
             delete spot.longitude
-            await spotsCollection.insertOne(spot)
+            return await spotsCollection.insertOne(spot, {$project: {_id: 1}})
         },
 
         async deleteSpot(spotId) {
