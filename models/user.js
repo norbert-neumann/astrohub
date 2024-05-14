@@ -219,7 +219,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             if (spot) {
                 const result = await usersCollection.updateOne(
                     {_id: ObjectId.createFromHexString(userId)},
-                    {$addToSet: {spots: spotObjectId}})
+                    {$addToSet: {favouriteSpots: spotObjectId}})
                 return {exists: true, alreadyAdded: result.modifiedCount === 0}
             }
             return {exists: false, alreadyAdded: false}
@@ -228,7 +228,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
         async removeFromFavouriteSpots(userId, spotId) {
             const result = await usersCollection.updateOne(
                 {_id: ObjectId.createFromHexString(userId)},
-                {$pull: {spots: ObjectId.createFromHexString(spotId)}}
+                {$pull: {favouriteSpots: ObjectId.createFromHexString(spotId)}}
             )
             return {found: result.modifiedCount > 0}
         },
@@ -298,7 +298,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
 
         async removeFromFriends(userId, friendId) {
             const result = await usersCollection.updateOne(
-                {_id: userId},
+                {_id: ObjectId.createFromHexString(userId)},
                 {$pull: {friends: ObjectId.createFromHexString(friendId)}}
             )
             return {found: result.modifiedCount > 0}
