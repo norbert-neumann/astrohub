@@ -1,6 +1,6 @@
 ## AstroHub API Documentation
 
-### User Endpoints
+### Users Endpoints
 
 #### Get User Information
 
@@ -151,3 +151,151 @@
 - **Request Body**:
   - `senderId`: ID of the user who sent the friend request
 - **Description**: Removes a friend request from the user's list of pending requests.
+
+## Spots Endpoints
+
+### Get Spots Sorted by Distance
+
+- **Endpoint**: `/spots/distance`
+- **Method**: GET
+- **Description**: Retrieves spots sorted by distance from a specified location.
+- **Parameters**: 
+  - `lattitude`: Latitude coordinates
+  - `longitude`: Longitude coordinates
+  - `distance` (optional): Maximum distance in kilometers
+
+### Get All Spots Sorted by Rating
+
+- **Endpoint**: `/spots/rating`
+- **Method**: GET
+- **Description**: Retrieves all spots sorted by rating.
+- **Parameters**: 
+  - `skip` (optional): Number of spots to skip
+  - `limit` (optional): Maximum number of spots to return
+  - `orderBy`: Sorting order ('asc' or 'desc')
+
+### Get Spots by Partial Name
+
+- **Endpoint**: `/spots/match-name/:name`
+- **Method**: GET
+- **Description**: Retrieves spots matching a partial name.
+- **Parameters**: 
+  - `name`: Partial name of the spot
+
+### Get Spot by ID
+
+- **Endpoint**: `/spots/:spotId`
+- **Method**: GET
+- **Description**: Retrieves a spot by its ID.
+- **Parameters**: 
+  - `spotId`: ID of the spot
+
+### Get Spots Within Distance
+
+- **Endpoint**: `/spots/`
+- **Method**: GET
+- **Description**: Retrieves spots within a specified distance from a location.
+- **Parameters**: 
+  - `lattitude`: Latitude coordinates
+  - `longitude`: Longitude coordinates
+  - `distance` (optional): Maximum distance in kilometers
+
+### Create Spot
+
+- **Endpoint**: `/spots/`
+- **Method**: POST
+- **Description**: Creates a new spot.
+- **Request Body**:
+  - `lattitude`: Latitude coordinates
+  - `longitude`: Longitude coordinates
+  - `name`: Name of the spot
+- **Response Status Code**: 201 (Created)
+
+### Update Spot Name
+
+- **Endpoint**: `/spots/:spotId/name`
+- **Method**: PATCH
+- **Description**: Updates the name of a spot.
+- **Parameters**: 
+  - `spotId`: ID of the spot
+- **Request Body**:
+  - `name`: New name for the spot
+
+### Update Spot Rating
+
+- **Endpoint**: `/spots/:spotId/rating`
+- **Method**: PATCH
+- **Description**: Updates the rating of a spot.
+- **Parameters**: 
+  - `spotId`: ID of the spot
+- **Request Body**:
+  - `rating`: New rating for the spot
+
+### Delete Spot
+
+- **Endpoint**: `/spots/:spotId`
+- **Method**: DELETE
+- **Description**: Deletes a spot.
+- **Parameters**: 
+- `spotId`: ID of the spot
+
+## Trips Endpoints
+
+### Get Upcoming Trips
+
+- **Endpoint**: `/trips/upcoming`
+- **Method**: GET
+- **Description**: Retrieves upcoming trips.
+- **Parameters**: 
+  - `lattitude`: Latitude coordinates
+  - `longitude`: Longitude coordinates
+  - `distance` (optional): Maximum distance in kilometers
+  - `timezone` (optional): Timezone information
+
+### Get Trip by ID
+
+- **Endpoint**: `/trips/:tripId`
+- **Method**: GET
+- **Description**: Retrieves a trip by its ID.
+- **Parameters**: 
+  - `tripId`: ID of the trip
+  - `timezone` (optional): Timezone information
+
+### Create Trip
+
+- **Endpoint**: `/trips/`
+- **Method**: POST
+- **Description**: Creates a new trip.
+- **Request Body**:
+  - `spotId`: ID of the spot
+  - `date`: Date of the trip
+  - `name`: Name of the trip
+- **Response Status Code**: 201 (Created)
+
+### Update Trip Name
+
+- **Endpoint**: `/trips/:tripId/name`
+- **Method**: PATCH
+- **Description**: Updates the name of a trip.
+- **Parameters**: 
+  - `tripId`: ID of the trip
+- **Request Body**:
+  - `name`: New name for the trip
+
+### Update Trip Date
+
+- **Endpoint**: `/trips/:tripId/date`
+- **Method**: PATCH
+- **Description**: Updates the date of a trip.
+- **Parameters**: 
+  - `tripId`: ID of the trip
+- **Request Body**:
+  - `date`: New date for the trip
+
+### Delete Trip
+
+- **Endpoint**: `/trips/:tripId`
+- **Method**: DELETE
+- **Description**: Deletes a trip.
+- **Parameters**: 
+- `tripId`: ID of the trip
