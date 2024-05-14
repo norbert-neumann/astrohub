@@ -42,7 +42,7 @@ function createSpotController(repository) {
         }
     }
 
-    const getSpotsWithinDistance = async (req, res) => {
+    const getSpotsWithinDistance = async (req, res, next) => {
         try {
             const origin = req.body.origin
             const distanceInKm = req.body.distance || undefined
@@ -59,11 +59,10 @@ function createSpotController(repository) {
                 lattitude: req.body.lattitude,
                 longitude: req.body.longitude,
                 name: req.body.name,
-                rating: 0,
-                lightPollution: req.body.lightPollution || undefined
+                rating: 0
             }
             await repository.saveSpot(spot)
-            res.send({data: 'POST spot'})
+            res.send({created: true})
         } catch (error) {
             next(error)
         }
@@ -73,8 +72,8 @@ function createSpotController(repository) {
         try {
             const spotId = req.params.spotId
             const newName = req.body.name
-            await repository.updateName(spotId, newName)
-            res.send({data: 'PATCH spot-name'})
+            const result = await repository.updateName(spotId, newName)
+            res.send(result)
         } catch (error) {
             next(error)
         }
@@ -83,9 +82,9 @@ function createSpotController(repository) {
     const updateRating = async (req, res, next) => {
         try {
             const spotId = req.params.spotId
-            const newRating = req.body.newRating
-            await repository.updateRating(spotId, newRating)
-            res.send({data: 'PATCH spot-rating'})
+            const newRating = req.body.rating
+            const result = await repository.updateRating(spotId, newRating)
+            res.send(result)
         } catch (error) {
             next(error)
         }

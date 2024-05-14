@@ -29,13 +29,7 @@ export const spotSchema = {
             maximum: 180.0
         },
 
-        ...nameSchema.properties,
-
-        lightPollution: {
-            type: 'number',
-            minimum: 0.0
-        }
-
+        ...nameSchema.properties
     },
     required: ['lattitude', 'longitude', 'name'],
     additionalProperties: true

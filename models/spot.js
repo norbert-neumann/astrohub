@@ -62,33 +62,20 @@ export default function createSpotFunctions(spotsCollection) {
             ]).toArray();
         },
 
-
-        updateName(spotId, newName) {
-            spotsCollection.updateOne(
+        async updateName(spotId, newName) {
+            const result = await spotsCollection.updateOne(
                 {_id: ObjectId.createFromHexString(spotId)},
                 {$set: {name: newName}}
             )
+            return {changed: result.modifiedCount > 0}
         },
 
-        updateLightPollution(spotId, pollutionValue) {
-            spotsCollection.updateOne(
+        async updateRating(spotId, newRating) {
+            const result = await spotsCollection.updateOne(
                 {_id: ObjectId.createFromHexString(spotId)},
-                {$set: {lightPollution: pollutionValue}}
+                {$set: {rating: newRating}}
             )
-        },
-
-        updateName(spotId, newName) {
-            return spotsCollection.updateOne(
-                {_id: ObjectId.createFromHexString(spotId)},
-                {$set: {name: newName}}
-            )
-        },
-
-        updateRating(spotId, newRating) {
-            return spotsCollection.updateOne(
-                {_id: ObjectId.createFromHexString(spotId)},
-                {$set: {rating: newRating}} //TODO: use something else instead of $set?
-            )
+            return {changed: result.modifiedCount > 0}
         },
 
         async saveSpot(spot) {

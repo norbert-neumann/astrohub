@@ -114,32 +114,6 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             return {favouriteSpots: result[0].favouriteSpots}
         },
 
-        async getTrips_(userId) {
-            const result = await usersCollection.aggregate([
-                {
-                    $match: {
-                        _id: ObjectId.createFromHexString(userId)
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "trips",
-                        localField: "trips",
-                        foreignField: "_id",
-                        as: "trips"
-                    }
-                },
-                {
-                    $project: {
-                        _id: 0,
-                        trips: 1
-                    }
-                }
-            ]).toArray()
-
-            return result[0]
-        },
-
         async getTrips(userId, timezone='UTC') {
             // Match user by userId
             const matchStage = {
