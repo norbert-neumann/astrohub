@@ -85,7 +85,8 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
         },
 
         async deleteTrip(tripId) {
-            await tripsCollection.deleteOne({_id: ObjectId.createFromHexString(tripId)})
+            const result = await tripsCollection.deleteOne({_id: ObjectId.createFromHexString(tripId)})
+            return {deleted: result.deletedCount > 0}
         }
     }
 }

@@ -290,7 +290,8 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
         },
 
         async deleteUser(userId) {
-            await usersCollection.deleteOne({_id: ObjectId.createFromHexString(userId)})
+            const result = usersCollection.deleteOne({_id: ObjectId.createFromHexString(userId)})
+            return {deleted: result.deletedCount > 0}
         },
     }
 }

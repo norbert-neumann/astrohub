@@ -86,12 +86,12 @@ export default function createSpotFunctions(spotsCollection) {
             spot.location = geoLocation
             delete spot.lattitude
             delete spot.longitude
-            console.log(spot)
             await spotsCollection.insertOne(spot)
         },
 
-        deleteSpot(spotId) {
-            spotsCollection.deleteOne({_id: ObjectId.createFromHexString(spotId)})
+        async deleteSpot(spotId) {
+            const result = await spotsCollection.deleteOne({_id: ObjectId.createFromHexString(spotId)})
+            return {deleted: result.deletedCount > 0}
         }
     }
 }
