@@ -1,5 +1,9 @@
 # AstroHub API Documentation
 
+## Authentication
+AstroHub supports authentication via Google OAuth 2.0. You can register and log in using your Google account or you can create an AstroHub account directly.
+Authentication Endpoint: `/auth`
+
 ## Users Endpoints
 
 ### Get User Information
