@@ -38,7 +38,7 @@ function createUserController(repository) {
 
     const getTrips = async (req, res) => {
         try {
-            const timezone = req.body.timezone
+            const timezone = req.body.timezone || 'UTC'
             const result = await repository.getTrips(req.params.userId, timezone)
             res.send(result)
         } catch (error) {

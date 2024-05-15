@@ -4,8 +4,8 @@ function createTripController(repository) {
         try {
             const lattitude = req.body.lattitude
             const longitude = req.body.longitude
-            const maxDistance = req.body.distance
-            const timezone = req.body.timezone
+            const maxDistance = req.body.distance || 30.0
+            const timezone = req.body.timezone || 'UTC'
             const result = await repository.getUpcomingTrips(lattitude, longitude, maxDistance, timezone)
             res.send(result)
         } catch (error) {
@@ -15,7 +15,7 @@ function createTripController(repository) {
 
     const getTripById = async (req, res, next) => {
         try {
-            const timezone = req.body.timezone
+            const timezone = req.body.timezone || 'UTC'
             const trip = await repository.getTripById(req.params.tripId, timezone)
             res.send(trip)
         } catch (error) {

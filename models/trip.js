@@ -6,7 +6,7 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
             return tripsCollection.find().toArray()
         },
 
-        async getUpcomingTrips(lattitude, longitude, distanceInKm=50.0, timezone='UTC') {
+        async getUpcomingTrips(lattitude, longitude, distanceInKm, timezone) {
             const geoOrigin = {
                 type: 'Point',
                 coordinates: [longitude, lattitude]
@@ -52,7 +52,7 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
             return upcomingTrips
         },
 
-        getTripById(tripId, timezone='UTC') {
+        getTripById(tripId, timezone) {
             return tripsCollection.findOne(
                 {_id: ObjectId.createFromHexString(tripId)},
                 {

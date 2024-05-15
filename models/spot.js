@@ -19,7 +19,7 @@ export default function createSpotFunctions(spotsCollection) {
             return spotsCollection.find({name}).toArray()
         },
 
-        getSpotsWithinDistance(lattitude, longitude, distanceInKm=50.0) {
+        getSpotsWithinDistance(lattitude, longitude, distanceInKm) {
             const pointP = { type: 'Point', coordinates: [longitude, lattitude] }
             const filter = {
                 location: {
@@ -38,7 +38,7 @@ export default function createSpotFunctions(spotsCollection) {
             return this.getAllSpots({filter, sort})
         },
 
-        getSpotsSortedByDistanceIncludeDistance(lattitude, longitude, maxDistanceInKm=30.0) {
+        getSpotsSortedByDistanceIncludeDistance(lattitude, longitude, maxDistanceInKm) {
             return spotsCollection.aggregate([
                 {
                     $geoNear: {

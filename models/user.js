@@ -113,7 +113,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             return {favouriteSpots: result[0].favouriteSpots}
         },
 
-        async getTrips(userId, timezone='UTC') {
+        async getTrips(userId, timezone) {
             // Match user by userId
             const matchStage = {
                 $match: { _id: ObjectId.createFromHexString(userId) }
