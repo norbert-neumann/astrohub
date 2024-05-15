@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import express from 'express'
 import userRouter from './routes/user.js'
 import spotRouter from './routes/spot.js'

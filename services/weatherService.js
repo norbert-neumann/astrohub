@@ -1,15 +1,14 @@
 import dateService from "./dateService.js"
 
-const visualCrossingApiKey = 'X6XEVSJRDWZV4D9V2VWARKL24'
 let visualCrossingEndpoint = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/weatherdata/forecast'
 const visualCrossingParams = {
-    locations: "46.660747,19.590709",
+    locations: "",
     aggregateHours: 1,
     unitGroup: "us",
     shortColumnNames: false,
     contentType: "json",
     includeAstronomy: true,
-    key: visualCrossingApiKey
+    key: process.env.VISUAL_CROSSING_API_KEY
 }
 
 const weatherService = {
