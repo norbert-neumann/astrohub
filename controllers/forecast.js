@@ -16,6 +16,7 @@ export default function getForecastController() {
         
             const ephimeresIntervals = await ephimeresService.getStarEphimeres(lattitude, longitude, starIds)
             const ephimeres = ephimeresIntervals.map(intervals => convertIntervalsToHistogram(intervals))
+           
             const { weatherIntervals, nightIntervals, baseDate } = await weatherService.getWeatherData(lattitude, longitude)
             const cloudCoverHistogram = convertIntervalsToHistogram(weatherIntervals)
 
