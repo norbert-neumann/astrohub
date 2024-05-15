@@ -1,13 +1,10 @@
 import bcrypt from 'bcrypt'
 import { Strategy as GoogleStrategy } from 'passport-google-oauth2'
 
-const GOOGLE_CLIENT_ID = '197387661875-k862cf23lkefonm2ntfj16i1k3teb6vu.apps.googleusercontent.com'
-const GOOGLE_CLIENT_SECRET = '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'
-
 function createAuthController(userRepository) {
     const googleStrategy = new GoogleStrategy({
-        clientID: GOOGLE_CLIENT_ID,
-        clientSecret: GOOGLE_CLIENT_SECRET,
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL: 'http://localhost:3000/auth/google/callback',
         passReqToCallback: true
     }, async (request, accessToken, refreshToken, profile, done) => {
@@ -59,7 +56,7 @@ function createAuthController(userRepository) {
 
             const result = await userRepository.saveUser(user)
             res.cookie('userId', result.insertedId.toString())
-            res.redirect('/auth')
+            return res.redirect('/auth')
         } catch (error) {
             next(error)
         }
@@ -71,7 +68,7 @@ function createAuthController(userRepository) {
             const user = await userRepository.getUserByUsername(username)
 
             if (!user) {
-                res.redirect('/')
+                return res.redirect('/auth')
             }
 
             const isMatch = await bcrypt.compare(password, user.password)
@@ -79,7 +76,7 @@ function createAuthController(userRepository) {
                 res.cookie('userId', user._id)
             }
 
-            res.redirect('/auth')
+            return res.redirect('/auth')
         } catch (err) {
             next(err)
         }
@@ -87,7 +84,7 @@ function createAuthController(userRepository) {
 
     const logoutUser = async (req, res, next) => {
         res.clearCookie('userId')
-        res.redirect('/auth')
+        return res.redirect('/auth')
     }
 
     const renderGoogleFailure = (req, res) => {

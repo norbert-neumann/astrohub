@@ -10,7 +10,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
         },
 
         getUserByUsername(username) {
-            return usersCollection.findOne({username}, {projection: {password: 0}})
+            return usersCollection.findOne({username})
         },
 
         async getOrCreate(user) {
