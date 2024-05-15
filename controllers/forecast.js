@@ -14,7 +14,6 @@ export default function getForecastController() {
             const timeZone = req.body.timeZone || 'UTC'
             const threshold = req.body.threshold || 30.0
         
-            // TODO: package these to Promise array
             const ephimeresIntervals = await ephimeresService.getStarEphimeres(lattitude, longitude, starIds)
             const ephimeres = ephimeresIntervals.map(intervals => convertIntervalsToHistogram(intervals))
             const { weatherIntervals, nightIntervals, baseDate } = await weatherService.getWeatherData(lattitude, longitude)

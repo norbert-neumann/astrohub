@@ -1,5 +1,5 @@
-import { createApp } from "./app.js";
-import { connectToMongo } from "./mongo-storage.js";
+import { createApp } from './app.js'
+import { connectToMongo } from './mongo-storage.js'
 import { NotAuthorired } from './errorHandling.js'
 
 const repository = await connectToMongo('mongodb+srv://neumann_norbert:projektmunka123@astrohubcluster.da8nsca.mongodb.net/?retryWrites=true&w=majority&appName=AstroHubCluster')

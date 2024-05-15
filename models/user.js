@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb"
+import { ObjectId } from 'mongodb'
 
 export default function createUserFunctions(usersCollection, spotsCollection, tripsCollection) {
     return {
@@ -39,20 +39,20 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
                 },
                 {
                     $lookup: {
-                        from: "users",
-                        localField: "friends",
-                        foreignField: "_id",
-                        as: "friends"
+                        from: 'users',
+                        localField: 'friends',
+                        foreignField: '_id',
+                        as: 'friends'
                     }
                 },
                 {
                     $project: {
                         _id: 0,
-                        "friends.password": 0,
+                        'friends.password': 0,
                         'friends.friendRequests': 0
                     }
                 }
-            ]).toArray();
+            ]).toArray()
             
             return {friends: result[0].friends}
         },
@@ -66,23 +66,23 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
                 },
                 {
                     $lookup: {
-                        from: "users",
-                        localField: "friendRequests",
-                        foreignField: "_id",
-                        as: "friendRequests"
+                        from: 'users',
+                        localField: 'friendRequests',
+                        foreignField: '_id',
+                        as: 'friendRequests'
                     }
                 },
                 {
                     $project: {
                         _id: 0,
-                        "friendRequests.password": 0,
+                        'friendRequests.password': 0,
                         'friendRequests.friendRequests': 0,
                         'friendRequests.trips': 0,
                         'friendRequests.favouriteSpots': 0,
                         'friendRequests.friends': 0
                     }
                 }
-            ]).toArray();
+            ]).toArray()
             
             return {friendRequests: result[0].friendRequests}
         },
@@ -96,10 +96,10 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
                 },
                 {
                     $lookup: {
-                        from: "spots",
-                        localField: "favouriteSpots",
-                        foreignField: "_id",
-                        as: "favouriteSpots"
+                        from: 'spots',
+                        localField: 'favouriteSpots',
+                        foreignField: '_id',
+                        as: 'favouriteSpots'
                     }
                 },
                 {
@@ -108,7 +108,7 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
                         'favouriteSpots.location': 0
                     }
                 }
-            ]).toArray();
+            ]).toArray()
             
             return {favouriteSpots: result[0].favouriteSpots}
         },
@@ -117,37 +117,37 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
             // Match user by userId
             const matchStage = {
                 $match: { _id: ObjectId.createFromHexString(userId) }
-            };
+            }
         
             // Lookup trips associated with the user
             const lookupStage = {
                 $lookup: {
-                    from: "trips",
-                    localField: "trips",
-                    foreignField: "_id",
-                    as: "trips"
+                    from: 'trips',
+                    localField: 'trips',
+                    foreignField: '_id',
+                    as: 'trips'
                 }
-            };
+            }
         
             // Project only 'trips' field and exclude '_id'
             const projectStage1 = {
                 $project: { _id: 0, trips: 1 }
-            };
+            }
         
             // Convert dates in 'trips' to the desired timezone
             const convertTimezoneStage = {
                 $addFields: {
                     trips: {
                         $map: {
-                            input: "$trips",
-                            as: "trip",
+                            input: '$trips',
+                            as: 'trip',
                             in: {
                                 $mergeObjects: [
-                                    "$$trip",
+                                    '$$trip',
                                     {
                                         date: {
                                             $dateToString: {
-                                                date: "$$trip.date",
+                                                date: '$$trip.date',
                                                 timezone
                                             }
                                         }
@@ -157,12 +157,12 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
                         }
                     }
                 }
-            };
+            }
         
             // Final project to exclude all fields except 'trips'
             const projectStage2 = {
                 $project: { trips: 1 }
-            };
+            }
         
             // Execute aggregation pipeline
             const result = await usersCollection.aggregate([
@@ -171,9 +171,9 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
                 projectStage1,
                 convertTimezoneStage,
                 projectStage2
-            ]).toArray();
+            ]).toArray()
         
-            return result[0];
+            return result[0]
         },
         
         async updateUsername(userId, newUsername) {
@@ -270,7 +270,6 @@ export default function createUserFunctions(usersCollection, spotsCollection, tr
                     {_id: ObjectId.createFromHexString(userId)},
                     {$addToSet: {friends: ObjectId.createFromHexString(friendId)}})
 
-                console.log(result)
                 return {exists: true, alreadyFriend: result.modifiedCount === 0}
             }
             return {exists: false, alreadyFriend: false}

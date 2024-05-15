@@ -1,12 +1,12 @@
-import dateService from "./dateService.js"
+import dateService from './dateService.js'
 
 let visualCrossingEndpoint = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/weatherdata/forecast'
 const visualCrossingParams = {
-    locations: "",
+    locations: '',
     aggregateHours: 1,
-    unitGroup: "us",
+    unitGroup: 'us',
     shortColumnNames: false,
-    contentType: "json",
+    contentType: 'json',
     includeAstronomy: true,
     key: process.env.VISUAL_CROSSING_API_KEY
 }
@@ -41,7 +41,7 @@ function getClearSkyIntervals(baseDate, hourlyForecast) {
     hourlyForecast.forEach(forecast => {
         const startDate = new Date(forecast.datetimeStr)
         const endDate = new Date(startDate)
-        endDate.setHours(startDate.getHours() + 1);
+        endDate.setHours(startDate.getHours() + 1)
 
         const startDateInMinutes = dateService.minutesBetweenDates(baseDate, startDate)
         const endDateInMinutes = dateService.minutesBetweenDates(baseDate, endDate)

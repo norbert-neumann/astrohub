@@ -1,5 +1,5 @@
-import fetchMock from 'jest-fetch-mock';
-import weatherService from '../services/weatherService.js';
+import fetchMock from 'jest-fetch-mock'
+import weatherService from '../services/weatherService.js'
 import mockedResponses from '../mocked-data/visual-crossing-responses.js'
 
 describe('weatherService', () => {

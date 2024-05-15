@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb"
+import { ObjectId } from 'mongodb'
 
 export default function createTripFunctions(tripsCollection, spotsCollection) {
     return {
@@ -8,7 +8,7 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
 
         async getUpcomingTrips(lattitude, longitude, distanceInKm=50.0, timezone='UTC') {
             const geoOrigin = {
-                type: "Point",
+                type: 'Point',
                 coordinates: [longitude, lattitude]
             }
 
@@ -18,7 +18,7 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
                         $centerSphere: [geoOrigin.coordinates, distanceInKm / 6371]
                     }
                 }
-            }).toArray();
+            }).toArray()
 
             const upcomingTrips = await tripsCollection.aggregate([
                 {
@@ -38,7 +38,7 @@ export default function createTripFunctions(tripsCollection, spotsCollection) {
                     }
                   },
                 {
-                    $unwind: "$spots"
+                    $unwind: '$spots'
                 },
                 {
                     $project: {

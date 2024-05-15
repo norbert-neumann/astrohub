@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt'
 import { Strategy as GoogleStrategy } from 'passport-google-oauth2'
 
 function createAuthController(userRepository) {
+
     const googleStrategy = new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -29,7 +30,7 @@ function createAuthController(userRepository) {
 
     const renderHomeOrLogin = async (req, res, next) => {
         if (req.cookies.userId) {
-            res.render('home', {user: req.cookies.userId})
+            res.render('home', { user: req.cookies.userId })
         } else {
             res.render('login')
         }
@@ -41,7 +42,7 @@ function createAuthController(userRepository) {
 
     const registerUser = async (req, res, next) => {
         try {
-            const {username, displayName, password} = req.body
+            const { username, displayName, password } = req.body
             const hashedPassword = await bcrypt.hash(password, 10)
 
             const user = {
@@ -64,7 +65,7 @@ function createAuthController(userRepository) {
 
     const loginUser = async (req, res, next) => {
         try {
-            const {username, password} = req.body
+            const { username, password } = req.body
             const user = await userRepository.getUserByUsername(username)
 
             if (!user) {

@@ -30,7 +30,7 @@ const starToId = {
     SIRIUS: -20,
     SPICA: -21,
     VEGA: -22
-};
+}
 
 const idToStar = {
     '1': 'Mercury',

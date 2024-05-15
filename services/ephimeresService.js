@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom'
-import dateService from "./dateService.js"
+import dateService from './dateService.js'
 
 const usnoEndpoint = 'https://aa.usno.navy.mil/calculated/mrst?'
 const usnoParams = {
@@ -57,7 +57,7 @@ function convertEphimeresToIntervals(rawText) {
 
     for (let day = 0; day < riseSetTable.length; day++) {
         const correctedDay = day - skippedDays
-        const row = riseSetTable[day];
+        const row = riseSetTable[day]
         rise = row.substring(25, 30)
         set = row.substring(59, 64)
 

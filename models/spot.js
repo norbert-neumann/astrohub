@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb"
+import { ObjectId } from 'mongodb'
 
 export default function createSpotFunctions(spotsCollection) {
     return {
@@ -20,7 +20,7 @@ export default function createSpotFunctions(spotsCollection) {
         },
 
         getSpotsWithinDistance(lattitude, longitude, distanceInKm=50.0) {
-            const pointP = { type: "Point", coordinates: [longitude, lattitude] }
+            const pointP = { type: 'Point', coordinates: [longitude, lattitude] }
             const filter = {
                 location: {
                     $geoWithin: {
@@ -43,10 +43,10 @@ export default function createSpotFunctions(spotsCollection) {
                 {
                     $geoNear: {
                         near: {
-                            type: "Point",
+                            type: 'Point',
                             coordinates: [longitude, lattitude]
                         },
-                        distanceField: "distance",
+                        distanceField: 'distance',
                         maxDistance: maxDistanceInKm * 1000,
                         spherical: true
                     }
@@ -59,7 +59,7 @@ export default function createSpotFunctions(spotsCollection) {
                         distance: 1
                     }
                 }
-            ]).toArray();
+            ]).toArray()
         },
 
         async updateName(spotId, newName) {
@@ -80,7 +80,7 @@ export default function createSpotFunctions(spotsCollection) {
 
         async saveSpot(spot) {
             const geoLocation = {
-                type: "Point",
+                type: 'Point',
                 coordinates: [spot.longitude, spot.lattitude]
             }
             spot.location = geoLocation

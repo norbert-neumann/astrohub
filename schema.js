@@ -1,4 +1,4 @@
-import { starToId } from "./star-to-index.js"
+import { starToId } from './star-to-index.js'
 
 export const nameSchema = {
     $schema: "http://json-schema.org/draft-07/schema#",

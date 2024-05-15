@@ -252,7 +252,6 @@ describe('dateService', () => {
                     ]
                 }
             ]
-
             const forecastCopy = [
                 {
                     sunset: new Date('2024-05-11T00:00:00Z'),
@@ -269,7 +268,6 @@ describe('dateService', () => {
                     ]
                 }
             ]
-
             const timeZone = 'America/New_York'
 
             const result = dateService.convertForecastToTimeZone(forecast, timeZone)
